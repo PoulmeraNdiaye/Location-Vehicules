@@ -1,4 +1,4 @@
-package org.mnjaay.models;
+package org.location.models;
 
 import jakarta.persistence.*;
 import java.util.List;

@@ -26,11 +26,11 @@
         <property name="hibernate.current_session_context_class">thread</property>
 
         <!-- Mapping classes -->
-        <mapping class="org.mnjaay.models.User"/>
-        <mapping class="org.mnjaay.models.Client"/>
-        <mapping class="org.mnjaay.models.Vehicle"/>
-        <mapping class="org.mnjaay.models.Reservation"/>
+        <mapping class="org.location.models.User"/>
+        <mapping class="org.location.models.Client"/>
+        <mapping class="org.location.models.Vehicle"/>
+        <mapping class="org.location.models.Reservation"/>
         <!-- Supprimez cette ligne si la classe Invoice n'existe pas -->
-        <!-- <mapping class="org.mnjaay.models.Invoice"/> -->
+        <!-- <mapping class="org.location.models.Invoice"/> -->
     </session-factory>
 </hibernate-configuration>

@@ -7,7 +7,7 @@
 
 <VBox alignment="CENTER" prefHeight="400.0" prefWidth="500.0" spacing="20.0"
       xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.mnjaay.controllers.LoginController">
+      fx:controller="org.location.controllers.LoginController">
     <children>
         <Label text="Système de Location de Voitures" textAlignment="CENTER">
             <font>

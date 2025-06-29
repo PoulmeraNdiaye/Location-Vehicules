@@ -1,4 +1,4 @@
-package org.mnjaay.factory;
+package org.location.factory;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;

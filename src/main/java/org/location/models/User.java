@@ -1,4 +1,4 @@
-package org.mnjaay.models;
+package org.location.models;
 
 import javax.persistence.*;
 import java.util.Objects;

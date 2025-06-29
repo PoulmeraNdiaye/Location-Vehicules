@@ -1,4 +1,4 @@
-package org.mnjaay.controllers;
+package org.location.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -6,11 +6,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.mnjaay.MainApplication;
+import org.location.MainApplication;
 //import org.mnjaay.services.VehicleService;
 //import org.mnjaay.services.ClientService;
 //import org.mnjaay.services.ReservationService;
-import org.mnjaay.utils.SessionManager;
+import org.location.utils.SessionManager;
 
 public class AdminController {
 

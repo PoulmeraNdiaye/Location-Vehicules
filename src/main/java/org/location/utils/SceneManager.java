@@ -1,9 +1,9 @@
-package org.mnjaay.utils;
+package org.location.utils;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.mnjaay.MainApplication;
+import org.location.MainApplication;
 
 public class SceneManager {
     private static Stage primaryStage;

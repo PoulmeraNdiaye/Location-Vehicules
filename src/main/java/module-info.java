@@ -10,7 +10,7 @@ module org.example.vehiclelocation {
     requires java.persistence;
     requires jbcrypt;
 
-    opens org.mnjaay.controllers to javafx.fxml;
-    opens org.mnjaay.models to org.hibernate.orm.core;
-    exports org.mnjaay;
+    opens org.location.controllers to javafx.fxml;
+    opens org.location.models to org.hibernate.orm.core;
+    exports org.location;
 }

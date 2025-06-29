@@ -1,14 +1,14 @@
-package org.mnjaay.controllers;
+package org.location.controllers;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.mnjaay.MainApplication;
-import org.mnjaay.models.User;
-import org.mnjaay.utils.UserService;
-import org.mnjaay.utils.SessionManager;
+import org.location.MainApplication;
+import org.location.models.User;
+import org.location.utils.UserService;
+import org.location.utils.SessionManager;
 
 public class LoginController {
 

@@ -1,10 +1,10 @@
-package org.mnjaay.utils;
+package org.location.utils;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
-import org.mnjaay.factory.HibernateFactory;
-import org.mnjaay.models.User;
+import org.location.factory.HibernateFactory;
+import org.location.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

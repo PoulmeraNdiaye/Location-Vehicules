@@ -1,7 +1,7 @@
-package org.mnjaay.utils;
+package org.location.utils;
 
-import org.mnjaay.models.User;
-import org.mnjaay.models.Client;
+import org.location.models.User;
+import org.location.models.Client;
 
 /**
  * Gestionnaire de session utilisant le pattern Singleton
