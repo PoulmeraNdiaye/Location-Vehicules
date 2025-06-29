@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<VBox alignment="CENTER" prefHeight="400.0" prefWidth="500.0" spacing="20.0"
+      xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.mnjaay.controllers.LoginController">
+    <children>
+        <Label text="Système de Location de Voitures" textAlignment="CENTER">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+
+        <VBox alignment="CENTER" maxWidth="300.0" spacing="15.0">
+            <children>
+                <Label text="Connexion" textAlignment="CENTER">
+                    <font>
+                        <Font size="18.0" />
+                    </font>
+                </Label>
+
+                <VBox spacing="5.0">
+                    <children>
+                        <Label text="Nom d'utilisateur:" />
+                        <TextField fx:id="loginField" promptText="Entrez votre login" />
+                    </children>
+                </VBox>
+
+                <VBox spacing="5.0">
+                    <children>
+                        <Label text="Mot de passe:" />
+                        <PasswordField fx:id="passwordField" promptText="Entrez votre mot de passe" />
+                    </children>
+                </VBox>
+
+                <Button fx:id="loginButton" mnemonicParsing="false" onAction="#handleLogin"
+                        prefWidth="200.0" text="Se connecter" />
+
+                <Label fx:id="errorLabel" textFill="RED" visible="false" />
+
+                <Separator />
+
+                <Button fx:id="registerClientButton" mnemonicParsing="false"
+                        onAction="#handleRegisterClient" prefWidth="200.0"
+                        text="S'inscrire comme client" />
+            </children>
+        </VBox>
+    </children>
+    <padding>
+        <Insets bottom="30.0" left="30.0" right="30.0" top="30.0" />
+    </padding>
+</VBox>

@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.mnjaay.controllers.AdminController">
+    <top>
+        <VBox>
+            <children>
+                <!-- Barre de menu -->
+                <MenuBar>
+                    <menus>
+                        <Menu mnemonicParsing="false" text="Fichier">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#handleLogout" text="Déconnexion" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleExit" text="Quitter" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Gestion">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#handleManageVehicles" text="Gérer Véhicules" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleManageClients" text="Gérer Clients" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleManageDrivers" text="Gérer Chauffeurs" />
+                            </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="Réservations">
+                            <items>
+                                <MenuItem mnemonicParsing="false" onAction="#handleViewReservations" text="Voir Réservations" />
+                                <MenuItem mnemonicParsing="false" onAction="#handleNewReservation" text="Nouvelle Réservation" />
+                            </items>
+                        </Menu>
+                    </menus>
+                </MenuBar>
+
+                <!-- Barre d'outils -->
+                <ToolBar>
+                    <items>
+                        <Button mnemonicParsing="false" onAction="#handleManageVehicles" text="Véhicules" />
+                        <Separator orientation="VERTICAL" />
+                        <Button mnemonicParsing="false" onAction="#handleManageClients" text="Clients" />
+                        <Separator orientation="VERTICAL" />
+                        <Button mnemonicParsing="false" onAction="#handleViewReservations" text="Réservations" />
+                        <Separator orientation="VERTICAL" />
+                        <Button mnemonicParsing="false" onAction="#handleManageDrivers" text="Chauffeurs" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <Label fx:id="userLabel" text="Utilisateur: " />
+                        <Button mnemonicParsing="false" onAction="#handleLogout" text="Déconnexion" />
+                    </items>
+                </ToolBar>
+            </children>
+        </VBox>
+    </top>
+
+    <center>
+        <TabPane fx:id="mainTabPane" tabClosingPolicy="SELECTED_TAB">
+            <tabs>
+                <!-- Onglet Tableau de bord -->
+                <Tab closable="false" text="Tableau de bord">
+                    <content>
+                        <VBox alignment="CENTER" spacing="20.0">
+                            <children>
+                                <Label text="Tableau de Bord - Administration">
+                                    <font>
+                                        <Font name="System Bold" size="24.0" />
+                                    </font>
+                                </Label>
+
+                                <GridPane alignment="CENTER" hgap="20.0" vgap="20.0">
+                                    <columnConstraints>
+                                        <ColumnConstraints />
+                                        <ColumnConstraints />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints />
+                                        <RowConstraints />
+                                    </rowConstraints>
+                                    <children>
+                                        <!-- Statistiques -->
+                                        <VBox alignment="CENTER" prefHeight="120.0" prefWidth="200.0"
+                                              style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-color: #f8f9fa; -fx-padding: 10;"
+                                              GridPane.columnIndex="0" GridPane.rowIndex="0">
+                                            <children>
+                                                <Label text="Véhicules Disponibles">
+                                                    <font>
+                                                        <Font name="System Bold" size="14.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="availableVehiclesLabel" text="0">
+                                                    <font>
+                                                        <Font size="24.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+
+                                        <VBox alignment="CENTER" prefHeight="120.0" prefWidth="200.0"
+                                              style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-color: #f8f9fa; -fx-padding: 10;"
+                                              GridPane.columnIndex="1" GridPane.rowIndex="0">
+                                            <children>
+                                                <Label text="Réservations Actives">
+                                                    <font>
+                                                        <Font name="System Bold" size="14.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="activeReservationsLabel" text="0">
+                                                    <font>
+                                                        <Font size="24.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+
+                                        <VBox alignment="CENTER" prefHeight="120.0" prefWidth="200.0"
+                                              style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-color: #f8f9fa; -fx-padding: 10;"
+                                              GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                            <children>
+                                                <Label text="Total Clients">
+                                                    <font>
+                                                        <Font name="System Bold" size="14.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="totalClientsLabel" text="0">
+                                                    <font>
+                                                        <Font size="24.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+
+                                        <VBox alignment="CENTER" prefHeight="120.0" prefWidth="200.0"
+                                              style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-color: #f8f9fa; -fx-padding: 10;"
+                                              GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                            <children>
+                                                <Label text="Revenus du Mois">
+                                                    <font>
+                                                        <Font name="System Bold" size="14.0" />
+                                                    </font>
+                                                </Label>
+                                                <Label fx:id="monthlyRevenueLabel" text="0 €">
+                                                    <font>
+                                                        <Font size="24.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </VBox>
+                                    </children>
+                                </GridPane>
+
+                                <HBox alignment="CENTER" spacing="20.0">
+                                    <children>
+                                        <Button mnemonicParsing="false" onAction="#handleQuickAddVehicle"
+                                                prefWidth="150.0" text="Ajouter Véhicule" />
+                                        <Button mnemonicParsing="false" onAction="#handleQuickAddClient"
+                                                prefWidth="150.0" text="Ajouter Client" />
+                                        <Button mnemonicParsing="false" onAction="#handleNewReservation"
+                                                prefWidth="150.0" text="Nouvelle Réservation" />
+                                    </children>
+                                </HBox>
+                            </children>
+                            <padding>
+                                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                            </padding>
+                        </VBox>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+
+    <bottom>
+        <Label fx:id="statusLabel" text="Prêt" />
+    </bottom>
+</BorderPane>
