@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.scene.text.Font?>
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.location.controllers.ClientManagementController" spacing="10">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10"/>
+    </padding>
+    <children>
+        <Label text="Gestion des Clients">
+            <font>
+                <Font name="System Bold" size="18.0"/>
+            </font>
+        </Label>
+        <TableView fx:id="clientTable">
+            <columns>
+                <TableColumn fx:id="idColumn" text="ID" prefWidth="150"/>
+                <TableColumn fx:id="nomColumn" text="Nom" prefWidth="150"/>
+                <TableColumn fx:id="emailColumn" text="Email" prefWidth="150"/>
+                <TableColumn fx:id="pointsFideliteColumn" text="Points Fidélité" prefWidth="150"/>
+            </columns>
+        </TableView>
+        <HBox spacing="10" alignment="CENTER">
+            <Button text="Rafraîchir" onAction="#refreshTable"/>
+            <Button text="Ajouter Client" onAction="#handleAddClient"/>
+        </HBox>
+    </children>
+</VBox>

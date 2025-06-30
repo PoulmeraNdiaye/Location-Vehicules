@@ -25,7 +25,6 @@ public class AddVehicleController {
     @FXML
     private void handleSave() {
         try {
-            // Validation des champs
             String marque = marqueField.getText().trim();
             String modele = modeleField.getText().trim();
             String tarifText = tarifField.getText().trim();
@@ -48,10 +47,8 @@ public class AddVehicleController {
                 return;
             }
 
-            // Enregistrer le véhicule via le service
             vehicleService.insertVehicle(marque, modele, tarif, immatriculation);
 
-            // Fermer la fenêtre
             Stage stage = (Stage) saveButton.getScene().getWindow();
             stage.close();
 
@@ -62,7 +59,6 @@ public class AddVehicleController {
 
     @FXML
     private void handleCancel() {
-        // Fermer la fenêtre sans enregistrer
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
     }

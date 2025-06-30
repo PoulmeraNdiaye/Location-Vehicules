@@ -10,7 +10,6 @@
     <top>
         <VBox>
             <children>
-                <!-- Barre de menu -->
                 <MenuBar>
                     <menus>
                         <Menu mnemonicParsing="false" text="Fichier">
@@ -35,7 +34,6 @@
                     </menus>
                 </MenuBar>
 
-                <!-- Barre d'outils -->
                 <ToolBar>
                     <items>
                         <Button mnemonicParsing="false" onAction="#handleManageVehicles" text="Véhicules" />
@@ -57,12 +55,11 @@
     <center>
         <TabPane fx:id="mainTabPane" tabClosingPolicy="SELECTED_TAB">
             <tabs>
-                <!-- Onglet Tableau de bord -->
                 <Tab closable="false" text="Tableau de bord">
                     <content>
                         <VBox alignment="CENTER" spacing="20.0">
                             <children>
-                                <Label text="Tableau de Bord - Administration">
+                                <Label text="Tableau de Bord - Administrateur">
                                     <font>
                                         <Font name="System Bold" size="24.0" />
                                     </font>
@@ -78,7 +75,6 @@
                                         <RowConstraints />
                                     </rowConstraints>
                                     <children>
-                                        <!-- Statistiques -->
                                         <VBox alignment="CENTER" prefHeight="120.0" prefWidth="200.0"
                                               style="-fx-border-color: #cccccc; -fx-border-radius: 5; -fx-background-color: #f8f9fa; -fx-padding: 10;"
                                               GridPane.columnIndex="0" GridPane.rowIndex="0">

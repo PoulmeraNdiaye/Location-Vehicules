@@ -3,10 +3,7 @@ package org.location.utils;
 import org.location.models.User;
 import org.location.models.Client;
 
-/**
- * Gestionnaire de session utilisant le pattern Singleton
- * Stocke les informations de l'utilisateur connecté
- */
+
 public class SessionManager {
     private static SessionManager instance;
     private User currentUser;

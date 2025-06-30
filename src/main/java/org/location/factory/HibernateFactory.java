@@ -5,6 +5,9 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.location.models.Client;
+import org.location.models.User;
+import org.location.models.Vehicle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,10 +24,16 @@ public class HibernateFactory {
                         .configure("hibernate.cfg.xml")
                         .build();
                 MetadataSources sources = new MetadataSources(ssr);
-                // Pas besoin d'ajouter explicitement les entités si elles sont dans hibernate.cfg.xml
+
+                sources.addAnnotatedClass(Vehicle.class);
+                sources.addAnnotatedClass(Client.class);
+                sources.addAnnotatedClass(User.class);
                 Metadata meta = sources.getMetadataBuilder().build();
+                meta.getEntityBindings().forEach(entity -> {
+                    logger.info("Entité mappée : {}", entity.getClassName());
+                });
                 sessionFactory = meta.getSessionFactoryBuilder().build();
-                logger.info("SessionFactory initialisé avec succès.");
+                logger.info("SessionFactory initialisée avec succès.");
             } catch (Exception e) {
                 logger.error("Erreur lors de l'initialisation du SessionFactory", e);
                 throw new RuntimeException("Impossible d'initialiser Hibernate", e);
@@ -36,7 +45,7 @@ public class HibernateFactory {
     public static synchronized void closeSessionFactory() {
         if (sessionFactory != null && !sessionFactory.isClosed()) {
             sessionFactory.close();
-            logger.info("SessionFactory fermé.");
+            logger.info("SessionFactory fermée.");
         }
     }
 }

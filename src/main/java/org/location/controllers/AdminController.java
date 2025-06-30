@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
+import org.location.services.ClientService;
 import org.location.services.VehicleService;
 import org.location.utils.SessionManager;
 
@@ -22,13 +23,13 @@ public class AdminController {
     @FXML private Label monthlyRevenueLabel;
 
     private VehicleService vehicleService;
-    // private ClientService clientService;
+    private ClientService clientService;
     // private ReservationService reservationService;
 
     public void initialize() {
-        // Initialiser les services
+
         vehicleService = new VehicleService();
-        // clientService = new ClientService();
+        clientService = new ClientService();
         // reservationService = new ReservationService();
 
         if (SessionManager.getCurrentUser() != null) {
@@ -40,16 +41,16 @@ public class AdminController {
 
     private void loadDashboardStatistics() {
         try {
-            // Charger les statistiques depuis la base de données
+
             long availableVehicles = vehicleService.countAvailableVehicles();
+            long totalClients = clientService.countTotalClients();
             // long activeReservations = reservationService.countActiveReservations();
-            // long totalClients = clientService.countTotalClients();
             // double monthlyRevenue = reservationService.getMonthlyRevenue();
 
-            // Mettre à jour les labels
+
             availableVehiclesLabel.setText(String.valueOf(availableVehicles));
+            totalClientsLabel.setText(String.valueOf(totalClients));
             // activeReservationsLabel.setText(String.valueOf(activeReservations));
-            // totalClientsLabel.setText(String.valueOf(totalClients));
             // monthlyRevenueLabel.setText(String.format("%.2f €", monthlyRevenue));
 
             statusLabel.setText("Statistiques mises à jour");
@@ -197,7 +198,7 @@ public class AdminController {
 
             Scene scene = new Scene(loader.load());
             scene.getStylesheets().add(
-                    MainApplication.class.getResource("/css/styles.css"). toExternalForm()
+                    MainApplication.class.getResource("/css/styles.css").toExternalForm()
             );
 
             dialogStage.setScene(scene);

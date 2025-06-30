@@ -13,49 +13,54 @@ import java.util.List;
 public class VehicleService {
     private static final Logger logger = LoggerFactory.getLogger(VehicleService.class);
 
-    public void insertVehicle(String marque, String modele, Double tarif, String immatriculation) {
-        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            // Commenté temporairement pour éviter l'erreur HQL
-            /*
-            Query<Vehicle> query = session.createQuery("FROM Vehicle WHERE immatriculation = :immat", Vehicle.class);
-            query.setParameter("immat", immatriculation);
-            if (query.uniqueResult() != null) {
-                logger.error("L'immatriculation {} existe déjà.", immatriculation);
-                throw new IllegalArgumentException("L'immatriculation existe déjà.");
-            }
-            */
+    public void insertVehicle(String marque, String modele, double tarif, String immatriculation) {
+        if (marque == null || marque.trim().isEmpty()) {
+            throw new IllegalArgumentException("La marque est obligatoire.");
+        }
+        if (modele == null || modele.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le modèle est obligatoire.");
+        }
+        if (tarif <= 0) {
+            throw new IllegalArgumentException("Le tarif doit être supérieur à 0.");
+        }
+        if (immatriculation == null || immatriculation.trim().isEmpty()) {
+            throw new IllegalArgumentException("L'immatriculation est obligatoire.");
+        }
 
-            Vehicle vehicle = new Vehicle(marque, modele, tarif, immatriculation);
-            Transaction transaction = session.beginTransaction();
+        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
+            logger.info("Insertion du véhicule: {}, {}, {}, {}", marque, modele, tarif, immatriculation);
+            Transaction tx = session.beginTransaction();
+            Vehicle vehicle = new Vehicle(marque.trim(), modele.trim(), tarif, immatriculation.trim());
             session.save(vehicle);
-            transaction.commit();
-            logger.info("Véhicule inséré avec succès : {}", immatriculation);
+            tx.commit();
+            logger.info("Véhicule inséré avec succès. ID = {}", vehicle.getId());
         } catch (Exception e) {
-            logger.error("Erreur lors de l'insertion du véhicule : {}", immatriculation, e);
-            throw e;
+            logger.error("Erreur lors de l'insertion du véhicule", e);
+            throw new RuntimeException("Échec d'insertion du véhicule", e);
         }
     }
 
     public long countAvailableVehicles() {
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            Query<Long> query = session.createQuery("SELECT COUNT(v) FROM Vehicle v WHERE v.disponible = true", Long.class);
-            Long result = query.uniqueResult();
-            logger.debug("Nombre de véhicules disponibles : {}", result);
-            return result != null ? result : 0;
+            Query<Long> query = session.createQuery("SELECT COUNT(v) FROM Vehicle v", Long.class);
+            return query.getSingleResult();
         } catch (Exception e) {
-            logger.error("Erreur lors du comptage des véhicules disponibles", e);
-            throw e;
+            logger.error("Erreur lors du comptage", e);
+            throw new RuntimeException("Échec du comptage", e);
         }
     }
 
-    public void testVehicleQuery() {
+    public List<Vehicle> getAllVehicles() {
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
             Query<Vehicle> query = session.createQuery("FROM Vehicle", Vehicle.class);
-            List<Vehicle> vehicles = query.list();
-            logger.info("Nombre de véhicules trouvés : {}", vehicles.size());
+            return query.getResultList();
         } catch (Exception e) {
-            logger.error("Erreur lors du test de la requête HQL", e);
-            throw e;
+            logger.error("Erreur lors de la récupération des véhicules", e);
+            throw new RuntimeException("Échec de récupération", e);
         }
+    }
+
+    public List<Vehicle> getAvailableVehicles() {
+        return getAllVehicles();
     }
 }

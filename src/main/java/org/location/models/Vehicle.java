@@ -1,6 +1,6 @@
 package org.location.models;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "vehicules")
@@ -18,15 +18,8 @@ public class Vehicle {
     @Column(nullable = false)
     private Double tarif;
 
-    @Column(nullable = false)
-    private Boolean disponible = true;
-
     @Column(nullable = false, unique = true)
     private String immatriculation;
-
-    // Commenté temporairement pour tester
-    // @OneToMany(mappedBy = "vehicule", cascade = CascadeType.ALL)
-    // private List<Reservation> reservations;
 
     public Vehicle() {}
 
@@ -35,22 +28,31 @@ public class Vehicle {
         this.modele = modele;
         this.tarif = tarif;
         this.immatriculation = immatriculation;
-        this.disponible = true;
     }
 
-    // Getters et setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
     public String getMarque() { return marque; }
     public void setMarque(String marque) { this.marque = marque; }
+
     public String getModele() { return modele; }
     public void setModele(String modele) { this.modele = modele; }
+
     public Double getTarif() { return tarif; }
     public void setTarif(Double tarif) { this.tarif = tarif; }
-    public Boolean getDisponible() { return disponible; }
-    public void setDisponible(Boolean disponible) { this.disponible = disponible; }
+
     public String getImmatriculation() { return immatriculation; }
     public void setImmatriculation(String immatriculation) { this.immatriculation = immatriculation; }
-    // public List<Reservation> getReservations() { return reservations; }
-    // public void setReservations(List<Reservation> reservations) { this.reservations = reservations; }
+
+    @Override
+    public String toString() {
+        return "Vehicle{" +
+                "id=" + id +
+                ", marque='" + marque + '\'' +
+                ", modele='" + modele + '\'' +
+                ", tarif=" + tarif +
+                ", immatriculation='" + immatriculation + '\'' +
+                '}';
+    }
 }
