@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.mnjaay</groupId>
+    <groupId>org.location</groupId>
     <artifactId>Vehicle-Location</artifactId>
     <version>1.0-SNAPSHOT</version>
     <name>Vehicle-Location</name>
@@ -44,7 +44,6 @@
             <version>8.0.33</version>
         </dependency>
 
-
         <!-- Jakarta API -->
         <dependency>
             <groupId>jakarta.persistence</groupId>
@@ -61,7 +60,6 @@
             <artifactId>jakarta.activation-api</artifactId>
             <version>2.0.1</version>
         </dependency>
-
 
         <!-- BCrypt for password hashing -->
         <dependency>
@@ -96,18 +94,19 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <resources>
-        <resource>
-            <directory>src/main/resources</directory>
-            <includes>
-                <include>**/*.fxml</include>
-                <include>**/*.properties</include>
-                <include>**/*.xml</include>
-            </includes>
-        </resource>
-    </resources>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <includes>
+                    <include>**/*.fxml</include>
+                    <include>**/*.css</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
         <plugins>
             <!-- Compiler Plugin -->
             <plugin>
@@ -116,6 +115,10 @@
                 <version>3.13.0</version>
                 <configuration>
                     <release>17</release>
+                    <compilerArgs>
+                        <arg>--add-modules</arg>
+                        <arg>java.naming</arg>
+                    </compilerArgs>
                 </configuration>
             </plugin>
 
@@ -133,18 +136,6 @@
                 </executions>
                 <configuration>
                     <mainClass>org.location.MainApplication</mainClass>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
-                <configuration>
-                    <release>17</release> <!-- Assure-toi de bien rester en Java 17 -->
-                    <compilerArgs>
-                        <arg>--add-modules</arg>
-                        <arg>java.naming</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
 

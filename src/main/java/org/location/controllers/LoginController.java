@@ -9,8 +9,11 @@ import org.location.MainApplication;
 import org.location.models.User;
 import org.location.utils.UserService;
 import org.location.utils.SessionManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoginController {
+    private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
 
     @FXML private TextField loginField;
     @FXML private PasswordField passwordField;
@@ -20,10 +23,11 @@ public class LoginController {
 
     private UserService userService;
 
+    @FXML
     public void initialize() {
         userService = new UserService();
 
-        // Ajouter des listeners pour masquer l'erreur
+
         loginField.textProperty().addListener((obs, oldText, newText) -> {
             errorLabel.setVisible(false);
         });
@@ -32,7 +36,7 @@ public class LoginController {
             errorLabel.setVisible(false);
         });
 
-        // Permettre la connexion avec Enter
+
         passwordField.setOnAction(e -> handleLogin());
     }
 
@@ -42,6 +46,7 @@ public class LoginController {
         String password = passwordField.getText();
 
         if (login.isEmpty() || password.isEmpty()) {
+            logger.warn("Tentative de connexion avec des champs vides");
             showError("Veuillez remplir tous les champs");
             return;
         }
@@ -50,24 +55,31 @@ public class LoginController {
             User user = userService.authenticate(login, password);
 
             if (user != null) {
-                // Sauvegarder l'utilisateur connecté
-                SessionManager.setCurrentUser(user);
 
-                // Rediriger selon le rôle
+                SessionManager.setCurrentUser(user);
+                logger.info("Connexion réussie pour l'utilisateur : {} (Rôle : {})", login, user.getRole());
+
+
                 switch (user.getRole()) {
                     case ADMIN:
-                    case EMPLOYEE:
                         switchToAdminInterface();
                         break;
+                    case EMPLOYEE:
+                        logger.warn("Interface employé non implémentée pour : {}", login);
+                        showError("Interface employé non disponible pour le moment");
+                        break;
                     case CLIENT:
-                        switchToClientInterface();
+                        logger.warn("Interface client non implémentée pour : {}", login);
+                        showError("Interface client non disponible pour le moment");
                         break;
                 }
             } else {
+                logger.warn("Échec de la connexion pour : {}", login);
                 showError("Login ou mot de passe incorrect");
             }
         } catch (Exception e) {
-            showError("Erreur de connexion: " + e.getMessage());
+            logger.error("Erreur lors de la tentative de connexion pour : {}", login, e);
+            showError("Erreur de connexion : " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -75,9 +87,13 @@ public class LoginController {
     @FXML
     private void handleRegisterClient() {
         try {
+            logger.debug("Tentative de chargement de /fxml/register-client.fxml");
             FXMLLoader loader = new FXMLLoader(
                     MainApplication.class.getResource("/fxml/register-client.fxml")
             );
+            if (loader.getLocation() == null) {
+                throw new IllegalStateException("Le fichier /fxml/register-client.fxml n'a pas été trouvé");
+            }
             Scene scene = new Scene(loader.load());
             scene.getStylesheets().add(
                     MainApplication.class.getResource("/css/styles.css").toExternalForm()
@@ -86,18 +102,26 @@ public class LoginController {
             Stage stage = (Stage) registerClientButton.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Inscription Client");
+            stage.setMaximized(false);
+            stage.centerOnScreen();
+            logger.info("Ouverture de l'interface d'inscription client");
         } catch (Exception e) {
-            showError("Erreur lors de l'ouverture de l'inscription");
+            logger.error("Erreur lors de l'ouverture de l'inscription client", e);
+            showError("Erreur lors de l'ouverture de l'inscription : " + e.getMessage());
             e.printStackTrace();
         }
     }
 
     private void switchToAdminInterface() {
         try {
+            logger.debug("Tentative de chargement de /fxml/main-admin.fxml");
             FXMLLoader loader = new FXMLLoader(
                     MainApplication.class.getResource("/fxml/main-admin.fxml")
             );
-            Scene scene = new Scene(loader.load());
+            if (loader.getLocation() == null) {
+                throw new IllegalStateException("Le fichier /fxml/main-admin.fxml n'a pas été trouvé");
+            }
+            Scene scene = new Scene(loader.load(), 800, 600);
             scene.getStylesheets().add(
                     MainApplication.class.getResource("/css/styles.css").toExternalForm()
             );
@@ -105,29 +129,12 @@ public class LoginController {
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Administration - Location de Voitures");
-            stage.setMaximized(true);
+            stage.setMaximized(false);
+            stage.centerOnScreen();
+            logger.info("Redirection vers l'interface admin réussie");
         } catch (Exception e) {
-            showError("Erreur lors de l'ouverture de l'interface admin");
-            e.printStackTrace();
-        }
-    }
-
-    private void switchToClientInterface() {
-        try {
-            FXMLLoader loader = new FXMLLoader(
-                    MainApplication.class.getResource("/fxml/main-client.fxml")
-            );
-            Scene scene = new Scene(loader.load());
-            scene.getStylesheets().add(
-                    MainApplication.class.getResource("/css/styles.css").toExternalForm()
-            );
-
-            Stage stage = (Stage) loginButton.getScene().getWindow();
-            stage.setScene(scene);
-            stage.setTitle("Location de Voitures - " + SessionManager.getCurrentUser().getNom());
-            stage.setMaximized(true);
-        } catch (Exception e) {
-            showError("Erreur lors de l'ouverture de l'interface client");
+            logger.error("Erreur lors de l'ouverture de l'interface admin", e);
+            showError("Erreur lors de l'ouverture de l'interface admin : " + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -7,9 +7,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
-//import org.mnjaay.services.VehicleService;
-//import org.mnjaay.services.ClientService;
-//import org.mnjaay.services.ReservationService;
+import org.location.services.VehicleService;
 import org.location.utils.SessionManager;
 
 public class AdminController {
@@ -18,48 +16,46 @@ public class AdminController {
     @FXML private Label userLabel;
     @FXML private Label statusLabel;
 
-    // Labels pour les statistiques
     @FXML private Label availableVehiclesLabel;
     @FXML private Label activeReservationsLabel;
     @FXML private Label totalClientsLabel;
     @FXML private Label monthlyRevenueLabel;
 
-     // private VehicleService vehicleService;
-   // private ClientService clientService;
-   // private ReservationService reservationService;
+    private VehicleService vehicleService;
+    // private ClientService clientService;
+    // private ReservationService reservationService;
 
     public void initialize() {
         // Initialiser les services
-           //vehicleService = new VehicleService();
-        //clientService = new ClientService();
-        //reservationService = new ReservationService();
+        vehicleService = new VehicleService();
+        // clientService = new ClientService();
+        // reservationService = new ReservationService();
 
-        // Afficher l'utilisateur connecté
         if (SessionManager.getCurrentUser() != null) {
             userLabel.setText("Utilisateur: " + SessionManager.getCurrentUser().getNom());
         }
 
-        // Charger les statistiques
         loadDashboardStatistics();
     }
 
     private void loadDashboardStatistics() {
         try {
             // Charger les statistiques depuis la base de données
-          // long availableVehicles = vehicleService.countAvailableVehicles();
-           /* long activeReservations = reservationService.countActiveReservations();
-            long totalClients = clientService.countTotalClients();
-            double monthlyRevenue = reservationService.getMonthlyRevenue();*/
+            long availableVehicles = vehicleService.countAvailableVehicles();
+            // long activeReservations = reservationService.countActiveReservations();
+            // long totalClients = clientService.countTotalClients();
+            // double monthlyRevenue = reservationService.getMonthlyRevenue();
 
             // Mettre à jour les labels
-            //availableVehiclesLabel.setText(String.valueOf(availableVehicles));
-            /*activeReservationsLabel.setText(String.valueOf(activeReservations));
-            totalClientsLabel.setText(String.valueOf(totalClients));
-            monthlyRevenueLabel.setText(String.format("%.2f €", monthlyRevenue));*/
+            availableVehiclesLabel.setText(String.valueOf(availableVehicles));
+            // activeReservationsLabel.setText(String.valueOf(activeReservations));
+            // totalClientsLabel.setText(String.valueOf(totalClients));
+            // monthlyRevenueLabel.setText(String.format("%.2f €", monthlyRevenue));
 
             statusLabel.setText("Statistiques mises à jour");
         } catch (Exception e) {
-            statusLabel.setText("Erreur lors du chargement des statistiques");
+            statusLabel.setText("Erreur lors du chargement des statistiques: " + e.getMessage());
+            showError("Erreur lors du chargement des statistiques: " + e.getMessage());
             e.printStackTrace();
         }
     }
@@ -67,14 +63,12 @@ public class AdminController {
     @FXML
     private void handleManageVehicles() {
         try {
-            // Vérifier si l'onglet existe déjà
             Tab existingTab = findTabByText("Gestion Véhicules");
             if (existingTab != null) {
                 mainTabPane.getSelectionModel().select(existingTab);
                 return;
             }
 
-            // Créer nouvel onglet pour la gestion des véhicules
             FXMLLoader loader = new FXMLLoader(
                     MainApplication.class.getResource("/fxml/vehicle-management.fxml")
             );
@@ -182,7 +176,6 @@ public class AdminController {
             dialogStage.setScene(scene);
             dialogStage.showAndWait();
 
-            // Actualiser les statistiques après une nouvelle réservation
             loadDashboardStatistics();
 
         } catch (Exception e) {
@@ -204,7 +197,7 @@ public class AdminController {
 
             Scene scene = new Scene(loader.load());
             scene.getStylesheets().add(
-                    MainApplication.class.getResource("/css/styles.css").toExternalForm()
+                    MainApplication.class.getResource("/css/styles.css"). toExternalForm()
             );
 
             dialogStage.setScene(scene);
@@ -221,7 +214,7 @@ public class AdminController {
     private void handleQuickAddClient() {
         try {
             FXMLLoader loader = new FXMLLoader(
-                    MainApplication.class.getResource("/fxml/add-client.fxml")
+                    MainApplication.class.getResource("/fxml/register-client.fxml")
             );
 
             Stage dialogStage = new Stage();

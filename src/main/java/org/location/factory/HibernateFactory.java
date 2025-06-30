@@ -20,7 +20,9 @@ public class HibernateFactory {
                 StandardServiceRegistry ssr = new StandardServiceRegistryBuilder()
                         .configure("hibernate.cfg.xml")
                         .build();
-                Metadata meta = new MetadataSources(ssr).getMetadataBuilder().build();
+                MetadataSources sources = new MetadataSources(ssr);
+                // Pas besoin d'ajouter explicitement les entités si elles sont dans hibernate.cfg.xml
+                Metadata meta = sources.getMetadataBuilder().build();
                 sessionFactory = meta.getSessionFactoryBuilder().build();
                 logger.info("SessionFactory initialisé avec succès.");
             } catch (Exception e) {

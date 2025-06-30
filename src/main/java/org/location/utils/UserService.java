@@ -4,6 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
 import org.location.factory.HibernateFactory;
+import org.location.models.Client;
 import org.location.models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,17 +48,22 @@ public class UserService {
         }
     }
 
-    public static void main(String[] args) {
-        UserService userService = new UserService();
-        try {
-            userService.insertUser("Aziz Sambe", "admin", "passer", User.Role.ADMIN);
-            userService.insertUser("Yacine Cisse", "employee", "passer", User.Role.EMPLOYEE);
-            userService.insertUser("Aida Diop", "client3", "passer", User.Role.CLIENT);
-            userService.insertUser("Sidy Sarr", "client4", "passer", User.Role.CLIENT);
+    public void insertClient(String nom, String email) {
+        Client client = new Client(nom, email);
+        Transaction transaction = null;
+        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.save(client);
+            transaction.commit();
+            logger.info("Client inséré avec succès : {}", email);
         } catch (Exception e) {
-            logger.error("Erreur lors de l'insertion des utilisateurs", e);
-        } finally {
-            HibernateFactory.closeSessionFactory();
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            logger.error("Erreur lors de l'insertion du client : {}", email, e);
+            throw e;
         }
     }
+
+
 }

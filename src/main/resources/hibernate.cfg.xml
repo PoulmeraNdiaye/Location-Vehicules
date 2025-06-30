@@ -12,7 +12,7 @@
         <property name="hibernate.connection.password"></property>
 
         <!-- Hibernate dialect -->
-        <property name="hibernate.dialect">org.hibernate.dialect.MySQL55Dialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</property>
 
         <!-- Echo all executed SQL to stdout -->
         <property name="hibernate.show_sql">true</property>

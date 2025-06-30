@@ -1,7 +1,7 @@
 package org.location.models;
 
-import jakarta.persistence.*;
-import java.util.List;
+import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "clients")
@@ -10,19 +10,18 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "nom", nullable = false)
     private String nom;
 
-    @Column(nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "points_fidelite")
-    private Integer pointsFidelite = 0;
+    @Column(name = "pointsFidelite", nullable = false)
+    private Integer pointsFidelite;
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    private List<Reservation> reservations;
-
-    public Client() {}
+    public Client() {
+        this.pointsFidelite = 0; // Valeur par défaut
+    }
 
     public Client(String nom, String email) {
         this.nom = nom;
@@ -32,16 +31,23 @@ public class Client {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
-
     public String getNom() { return nom; }
     public void setNom(String nom) { this.nom = nom; }
-
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
-
     public Integer getPointsFidelite() { return pointsFidelite; }
     public void setPointsFidelite(Integer pointsFidelite) { this.pointsFidelite = pointsFidelite; }
 
-    public List<Reservation> getReservations() { return reservations; }
-    public void setReservations(List<Reservation> reservations) { this.reservations = reservations; }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Client client = (Client) o;
+        return Objects.equals(id, client.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
 }

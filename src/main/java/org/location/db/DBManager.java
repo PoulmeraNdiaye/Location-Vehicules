@@ -13,10 +13,10 @@ public class DBManager {
         }
 
         try {
-            // Load the MySQL JDBC driver
+
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            // Open a connection
+
             connection = DriverManager.getConnection(
                     "jdbc:mysql://localhost:3306/dbvehicules-hbm?serverTimezone=UTC&useSSL=false",
                     "root",
@@ -30,7 +30,6 @@ public class DBManager {
         }
     }
 
-    // Optional: Close the connection when the application shuts down
     public static void closeConnection() {
         if (connection != null) {
             try {
