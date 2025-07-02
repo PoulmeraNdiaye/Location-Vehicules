@@ -29,6 +29,7 @@
         <HBox spacing="10" alignment="CENTER">
             <Button text="Rafraîchir" onAction="#refreshTable"/>
             <Button text="Ajouter Véhicule" onAction="#handleAddVehicle"/>
+            <Button onAction="#onEditVehicle" text="Modifier" />
         </HBox>
     </children>
 </VBox>

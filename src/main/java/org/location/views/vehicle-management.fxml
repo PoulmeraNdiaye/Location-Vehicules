@@ -1,33 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
-<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.location.controllers.VehicleManagementController" spacing="10">
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.location.controllers.VehicleManagementController">
     <padding>
-        <Insets top="10" right="10" bottom="10" left="10"/>
+        <Insets bottom="10" left="10" right="10" top="10" />
     </padding>
     <children>
         <Label text="Gestion des Véhicules Disponibles">
             <font>
-                <Font name="System Bold" size="18.0"/>
+                <Font name="System Bold" size="18.0" />
             </font>
         </Label>
         <TableView fx:id="vehicleTable">
             <columns>
-                <TableColumn fx:id="idColumn" text="ID" prefWidth="50"/>
-                <TableColumn fx:id="marqueColumn" text="Marque" prefWidth="150"/>
-                <TableColumn fx:id="modeleColumn" text="Modèle" prefWidth="150"/>
-                <TableColumn fx:id="tarifColumn" text="Tarif (€)" prefWidth="100"/>
-                <TableColumn fx:id="immatriculationColumn" text="Immatriculation" prefWidth="150"/>
+                <TableColumn fx:id="idColumn" prefWidth="50" text="ID" />
+                <TableColumn fx:id="marqueColumn" prefWidth="150" text="Marque" />
+                <TableColumn fx:id="modeleColumn" prefWidth="150" text="Modèle" />
+                <TableColumn fx:id="tarifColumn" prefWidth="100" text="Tarif (€)" />
+                <TableColumn fx:id="immatriculationColumn" prefWidth="150" text="Immatriculation" />
             </columns>
         </TableView>
-        <HBox spacing="10" alignment="CENTER">
-            <Button text="Rafraîchir" onAction="#refreshTable"/>
-            <Button text="Ajouter Véhicule" onAction="#handleAddVehicle"/>
+        <HBox alignment="CENTER" spacing="10">
+            <Button onAction="#refreshTable" text="Rafraîchir" />
+            <Button onAction="#handleAddVehicle" text="Ajouter Véhicule" />
+            <Button onAction="#onEditVehicle" text="Modifier" />
+
         </HBox>
     </children>
 </VBox>

@@ -1,9 +1,14 @@
 package org.location.utils;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.location.MainApplication;
+import org.location.controllers.AddVehicleController;
+import org.location.models.Vehicle;
+
+import java.io.IOException;
 
 public class SceneManager {
     private static Stage primaryStage;
@@ -28,4 +33,21 @@ public class SceneManager {
             e.printStackTrace();
         }
     }
+    public static void openEditVehicleWindow(Vehicle vehicle) {
+        try {
+            FXMLLoader loader = new FXMLLoader(SceneManager.class.getResource("/fxml/add-vehicle.fxml"));
+            Parent root = loader.load();
+
+            AddVehicleController controller = loader.getController();
+            controller.setVehicleToEdit(vehicle); // méthode à créer
+
+            Stage stage = new Stage();
+            stage.setTitle("Modifier Véhicule");
+            stage.setScene(new Scene(root));
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

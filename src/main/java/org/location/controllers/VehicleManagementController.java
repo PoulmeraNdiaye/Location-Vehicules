@@ -2,6 +2,7 @@ package org.location.controllers;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,6 +13,7 @@ import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.models.Vehicle;
 import org.location.services.VehicleService;
+import org.location.utils.SceneManager;
 
 import java.util.List;
 
@@ -79,5 +81,19 @@ public class VehicleManagementController {
         alert.setHeaderText("Une erreur est survenue");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @FXML
+    private void onEditVehicle() {
+        Vehicle selected = vehicleTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            SceneManager.openEditVehicleWindow(selected);
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun véhicule sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un véhicule à modifier.");
+            alert.showAndWait();
+        }
     }
 }

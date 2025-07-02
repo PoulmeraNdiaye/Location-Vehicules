@@ -59,6 +59,17 @@ public class VehicleService {
             throw new RuntimeException("Échec de récupération", e);
         }
     }
+    public static void updateVehicle(Vehicle vehicle) {
+        Transaction tx = null;
+        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.update(vehicle);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            e.printStackTrace();
+        }
+    }
 
     public List<Vehicle> getAvailableVehicles() {
         return getAllVehicles();

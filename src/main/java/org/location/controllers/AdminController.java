@@ -81,6 +81,7 @@ public class AdminController {
 
             statusLabel.setText("Gestion des véhicules ouverte");
         } catch (Exception e) {
+            e.printStackTrace();
             showError("Erreur lors de l'ouverture de la gestion des véhicules: " + e.getMessage());
         }
     }

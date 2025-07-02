@@ -5,6 +5,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.location.models.Vehicle;
 import org.location.services.VehicleService;
 
 public class AddVehicleController {
@@ -17,6 +18,7 @@ public class AddVehicleController {
     @FXML private Button cancelButton;
 
     private VehicleService vehicleService;
+    private Vehicle vehicleToEdit = null;
 
     public void initialize() {
         vehicleService = new VehicleService();
@@ -47,7 +49,18 @@ public class AddVehicleController {
                 return;
             }
 
-            vehicleService.insertVehicle(marque, modele, tarif, immatriculation);
+            if (vehicleToEdit != null) {
+                // Mode édition
+                vehicleToEdit.setMarque(marque);
+                vehicleToEdit.setModele(modele);
+                vehicleToEdit.setTarif(tarif);
+                vehicleToEdit.setImmatriculation(immatriculation);
+
+                vehicleService.updateVehicle(vehicleToEdit);
+            } else {
+                // Mode ajout
+                vehicleService.insertVehicle(marque, modele, tarif, immatriculation);
+            }
 
             Stage stage = (Stage) saveButton.getScene().getWindow();
             stage.close();
@@ -61,6 +74,15 @@ public class AddVehicleController {
     private void handleCancel() {
         Stage stage = (Stage) cancelButton.getScene().getWindow();
         stage.close();
+    }
+
+    public void setVehicleToEdit(Vehicle vehicle) {
+        this.vehicleToEdit = vehicle;
+
+        marqueField.setText(vehicle.getMarque());
+        modeleField.setText(vehicle.getModele());
+        tarifField.setText(String.valueOf(vehicle.getTarif()));
+        immatriculationField.setText(vehicle.getImmatriculation());
     }
 
     private void showError(String message) {
