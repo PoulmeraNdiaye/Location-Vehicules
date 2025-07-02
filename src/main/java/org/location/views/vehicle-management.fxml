@@ -34,6 +34,7 @@
             <Button onAction="#refreshTable" text="Rafraîchir" />
             <Button onAction="#handleAddVehicle" text="Ajouter Véhicule" />
             <Button onAction="#onEditVehicle" text="Modifier" />
+            <Button text="Supprimer" onAction="#onDeleteVehicle" />
 
         </HBox>
     </children>

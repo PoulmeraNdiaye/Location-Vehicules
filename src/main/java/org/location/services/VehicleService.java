@@ -71,6 +71,18 @@ public class VehicleService {
             e.printStackTrace();
         }
     }
+    public void deleteVehicle(Vehicle vehicle) {
+        Transaction tx = null;
+        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+            session.delete(vehicle);
+            tx.commit();
+        } catch (Exception e) {
+            if (tx != null) tx.rollback();
+            throw new RuntimeException("Erreur lors de la suppression", e);
+        }
+    }
+
 
     public List<Vehicle> getAvailableVehicles() {
         return getAllVehicles();

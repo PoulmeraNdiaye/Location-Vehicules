@@ -32,6 +32,8 @@
             <Button text="Rafraîchir" onAction="#refreshTable"/>
             <Button text="Ajouter Véhicule" onAction="#handleAddVehicle"/>
             <Button onAction="#onEditVehicle" text="Modifier" />
+            <Button text="Supprimer" onAction="#onDeleteVehicle" />
+
         </HBox>
     </children>
 </VBox>

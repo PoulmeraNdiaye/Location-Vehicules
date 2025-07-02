@@ -104,4 +104,32 @@ public class VehicleManagementController {
             alert.showAndWait();
         }
     }
+    @FXML
+    private void onDeleteVehicle() {
+        Vehicle selected = vehicleTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+            confirm.setTitle("Confirmation");
+            confirm.setHeaderText("Suppression d'un véhicule");
+            confirm.setContentText("Voulez-vous vraiment supprimer ce véhicule ?");
+
+            confirm.showAndWait().ifPresent(response -> {
+                if (response == ButtonType.OK) {
+                    try {
+                        vehicleService.deleteVehicle(selected);
+                        refreshTable();
+                    } catch (Exception e) {
+                        showError("Erreur lors de la suppression : " + e.getMessage());
+                    }
+                }
+            });
+        } else {
+            Alert alert = new Alert(Alert.AlertType.WARNING);
+            alert.setTitle("Aucun véhicule sélectionné");
+            alert.setHeaderText(null);
+            alert.setContentText("Veuillez sélectionner un véhicule à supprimer.");
+            alert.showAndWait();
+        }
+    }
+
 }
