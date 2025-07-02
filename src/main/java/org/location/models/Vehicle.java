@@ -21,6 +21,9 @@ public class Vehicle {
     @Column(nullable = false, unique = true)
     private String immatriculation;
 
+    @Column(name = "disponible")
+    private Boolean disponible = true;
+
     public Vehicle() {}
 
     public Vehicle(String marque, String modele, Double tarif, String immatriculation) {
@@ -28,6 +31,7 @@ public class Vehicle {
         this.modele = modele;
         this.tarif = tarif;
         this.immatriculation = immatriculation;
+        this.disponible = true;
     }
 
     public Long getId() { return id; }
@@ -45,6 +49,14 @@ public class Vehicle {
     public String getImmatriculation() { return immatriculation; }
     public void setImmatriculation(String immatriculation) { this.immatriculation = immatriculation; }
 
+    public Boolean getDisponible() {
+        return disponible;
+    }
+
+    public void setDisponible(Boolean disponible) {
+        this.disponible = disponible;
+    }
+
     @Override
     public String toString() {
         return "Vehicle{" +
@@ -53,6 +65,7 @@ public class Vehicle {
                 ", modele='" + modele + '\'' +
                 ", tarif=" + tarif +
                 ", immatriculation='" + immatriculation + '\'' +
+                ", disponible=" + disponible +
                 '}';
     }
 }

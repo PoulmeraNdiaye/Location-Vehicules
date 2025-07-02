@@ -23,6 +23,8 @@
                 <TableColumn fx:id="modeleColumn" text="Modèle"/>
                 <TableColumn fx:id="tarifColumn" text="Tarif (€)"/>
                 <TableColumn fx:id="immatriculationColumn" text="Immatriculation"/>
+                <TableColumn fx:id="disponibleColumn" text="Disponibilité" />
+
             </columns>
         </TableView>
 

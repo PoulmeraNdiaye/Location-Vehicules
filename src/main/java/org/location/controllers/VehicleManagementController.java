@@ -1,5 +1,6 @@
 package org.location.controllers;
 
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,6 +26,8 @@ public class VehicleManagementController {
     @FXML private TableColumn<Vehicle, String> modeleColumn;
     @FXML private TableColumn<Vehicle, Double> tarifColumn;
     @FXML private TableColumn<Vehicle, String> immatriculationColumn;
+    //@FXML private TableColumn<Vehicle, Boolean> disponibleColumn;
+    @FXML private TableColumn<Vehicle, String> disponibleColumn;
 
     private final VehicleService vehicleService = new VehicleService();
 
@@ -35,6 +38,11 @@ public class VehicleManagementController {
         modeleColumn.setCellValueFactory(new PropertyValueFactory<>("modele"));
         tarifColumn.setCellValueFactory(new PropertyValueFactory<>("tarif"));
         immatriculationColumn.setCellValueFactory(new PropertyValueFactory<>("immatriculation"));
+        //disponibleColumn.setCellValueFactory(new PropertyValueFactory<>("disponible"));
+        disponibleColumn.setCellValueFactory(cellData -> {
+            boolean dispo = Boolean.TRUE.equals(cellData.getValue().getDisponible());
+            return new ReadOnlyStringWrapper(dispo ? "Disponible" : "Indisponible");
+        });
 
         vehicleTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 

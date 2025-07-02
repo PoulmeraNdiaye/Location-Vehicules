@@ -26,6 +26,8 @@
                 <TableColumn fx:id="modeleColumn" prefWidth="150" text="Modèle" />
                 <TableColumn fx:id="tarifColumn" prefWidth="100" text="Tarif (€)" />
                 <TableColumn fx:id="immatriculationColumn" prefWidth="150" text="Immatriculation" />
+                <TableColumn fx:id="disponibleColumn" text="Disponibilité" />
+
             </columns>
         </TableView>
         <HBox alignment="CENTER" spacing="10">

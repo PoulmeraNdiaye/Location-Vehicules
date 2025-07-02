@@ -55,6 +55,7 @@ public class VehicleService {
             Query<Vehicle> query = session.createQuery("FROM Vehicle", Vehicle.class);
             return query.getResultList();
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("Erreur lors de la récupération des véhicules", e);
             throw new RuntimeException("Échec de récupération", e);
         }
