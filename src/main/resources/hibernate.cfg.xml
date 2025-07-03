@@ -30,6 +30,7 @@
         <mapping class="org.location.models.Client"/>
         <mapping class="org.location.models.Vehicle"/>
         <mapping class="org.location.models.Reservation"/>
+        <mapping class="org.location.models.Chauffeur"/>
         <!-- Supprimez cette ligne si la classe Invoice n'existe pas -->
         <!-- <mapping class="org.location.models.Invoice"/> -->
     </session-factory>
