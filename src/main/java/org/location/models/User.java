@@ -23,6 +23,10 @@ public class User {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @OneToOne(fetch = FetchType.LAZY, optional = true)
+    @JoinColumn(name = "client_id", referencedColumnName = "id")
+    private Client client;
+
     public enum Role {
         ADMIN, EMPLOYEE, CLIENT
     }
@@ -36,16 +40,62 @@ public class User {
         this.role = role;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getNom() { return nom; }
-    public void setNom(String nom) { this.nom = nom; }
-    public String getLogin() { return login; }
-    public void setLogin(String login) { this.login = login; }
-    public String getMotDePasse() { return motDePasse; }
-    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
+    public User(String nom, String login, String motDePasse, Role role, Client client) {
+        this.nom = nom;
+        this.login = login;
+        this.motDePasse = motDePasse;
+        this.role = role;
+        this.client = client;
+    }
+
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
+
+    public String getLogin() {
+        return login;
+    }
+
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public String getMotDePasse() {
+        return motDePasse;
+    }
+
+    public void setMotDePasse(String motDePasse) {
+        this.motDePasse = motDePasse;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -58,5 +108,16 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", nom='" + nom + '\'' +
+                ", login='" + login + '\'' +
+                ", role=" + role +
+                ", client=" + (client != null ? client.getId() : null) +
+                '}';
     }
 }
