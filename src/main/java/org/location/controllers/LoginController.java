@@ -27,16 +27,8 @@ public class LoginController {
     public void initialize() {
         userService = new UserService();
 
-
-        loginField.textProperty().addListener((obs, oldText, newText) -> {
-            errorLabel.setVisible(false);
-        });
-
-        passwordField.textProperty().addListener((obs, oldText, newText) -> {
-            errorLabel.setVisible(false);
-        });
-
-
+        loginField.textProperty().addListener((obs, oldText, newText) -> errorLabel.setVisible(false));
+        passwordField.textProperty().addListener((obs, oldText, newText) -> errorLabel.setVisible(false));
         passwordField.setOnAction(e -> handleLogin());
     }
 
@@ -53,12 +45,9 @@ public class LoginController {
 
         try {
             User user = userService.authenticate(login, password);
-
             if (user != null) {
-
                 SessionManager.setCurrentUser(user);
                 logger.info("Connexion réussie pour l'utilisateur : {} (Rôle : {})", login, user.getRole());
-
 
                 switch (user.getRole()) {
                     case ADMIN:
@@ -69,8 +58,7 @@ public class LoginController {
                         showError("Interface employé non disponible pour le moment");
                         break;
                     case CLIENT:
-                        logger.warn("Interface client non implémentée pour : {}", login);
-                        showError("Interface client non disponible pour le moment");
+                        switchToClientInterface(user);
                         break;
                 }
             } else {
@@ -80,7 +68,6 @@ public class LoginController {
         } catch (Exception e) {
             logger.error("Erreur lors de la tentative de connexion pour : {}", login, e);
             showError("Erreur de connexion : " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -88,16 +75,12 @@ public class LoginController {
     private void handleRegisterClient() {
         try {
             logger.debug("Tentative de chargement de /fxml/register-client.fxml");
-            FXMLLoader loader = new FXMLLoader(
-                    MainApplication.class.getResource("/fxml/register-client.fxml")
-            );
+            FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/fxml/register-client.fxml"));
             if (loader.getLocation() == null) {
                 throw new IllegalStateException("Le fichier /fxml/register-client.fxml n'a pas été trouvé");
             }
             Scene scene = new Scene(loader.load());
-            scene.getStylesheets().add(
-                    MainApplication.class.getResource("/css/styles.css").toExternalForm()
-            );
+            scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
             Stage stage = (Stage) registerClientButton.getScene().getWindow();
             stage.setScene(scene);
@@ -108,23 +91,18 @@ public class LoginController {
         } catch (Exception e) {
             logger.error("Erreur lors de l'ouverture de l'inscription client", e);
             showError("Erreur lors de l'ouverture de l'inscription : " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
     private void switchToAdminInterface() {
         try {
             logger.debug("Tentative de chargement de /fxml/main-admin.fxml");
-            FXMLLoader loader = new FXMLLoader(
-                    MainApplication.class.getResource("/fxml/main-admin.fxml")
-            );
+            FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/fxml/main-admin.fxml"));
             if (loader.getLocation() == null) {
                 throw new IllegalStateException("Le fichier /fxml/main-admin.fxml n'a pas été trouvé");
             }
             Scene scene = new Scene(loader.load(), 800, 600);
-            scene.getStylesheets().add(
-                    MainApplication.class.getResource("/css/styles.css").toExternalForm()
-            );
+            scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
             Stage stage = (Stage) loginButton.getScene().getWindow();
             stage.setScene(scene);
@@ -135,7 +113,31 @@ public class LoginController {
         } catch (Exception e) {
             logger.error("Erreur lors de l'ouverture de l'interface admin", e);
             showError("Erreur lors de l'ouverture de l'interface admin : " + e.getMessage());
-            e.printStackTrace();
+        }
+    }
+
+    private void switchToClientInterface(User user) {
+        try {
+            logger.debug("Tentative de chargement de /fxml/main-client.fxml");
+            FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/fxml/main-client.fxml"));
+            if (loader.getLocation() == null) {
+                throw new IllegalStateException("Le fichier /fxml/main-client.fxml n'a pas été trouvé");
+            }
+            Scene scene = new Scene(loader.load(), 800, 600);
+            scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
+
+            ClientController clientController = loader.getController();
+            clientController.setCurrentUser(user);
+
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(scene);
+            stage.setTitle("Espace Client - Location de Voitures");
+            stage.setMaximized(false);
+            stage.centerOnScreen();
+            logger.info("Redirection vers l'interface client réussie pour : {}", user.getLogin());
+        } catch (Exception e) {
+            logger.error("Erreur lors de l'ouverture de l'interface client", e);
+            showError("Erreur lors de l'ouverture de l'interface client : " + e.getMessage());
         }
     }
 

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.location.controllers.ClientReservationsController">
+    <top>
+        <ToolBar>
+            <items>
+                <Label text="Mes Réservations" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+                <Region HBox.hgrow="ALWAYS" />
+                <Button mnemonicParsing="false" onAction="#handleBack" text="Retour" style="-fx-background-color: #2196F3; -fx-text-fill: white;" />
+            </items>
+        </ToolBar>
+    </top>
+    <center>
+        <VBox alignment="CENTER" spacing="20.0" style="-fx-background-color: #f0f8ff; -fx-border-color: #007bff; -fx-border-radius: 5;">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+            </padding>
+            <children>
+                <TableView fx:id="reservationTable" prefHeight="400.0" prefWidth="600.0">
+                    <columns>
+                        <TableColumn fx:id="idColumn" text="ID" prefWidth="75.0" />
+                        <TableColumn fx:id="vehicleColumn" text="Véhicule" prefWidth="150.0" />
+                        <TableColumn fx:id="dateDebutColumn" text="Date Début" prefWidth="120.0" />
+                        <TableColumn fx:id="dateFinColumn" text="Date Fin" prefWidth="120.0" />
+                        <TableColumn fx:id="statutColumn" text="Statut" prefWidth="100.0" />
+                    </columns>
+                </TableView>
+                <Label fx:id="errorLabel" text="" style="-fx-text-fill: red;" visible="false" />
+            </children>
+        </VBox>
+    </center>
+</BorderPane>
