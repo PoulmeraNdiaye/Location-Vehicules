@@ -18,8 +18,8 @@ public class LoginController {
     @FXML private TextField loginField;
     @FXML private PasswordField passwordField;
     @FXML private Button loginButton;
-    @FXML private Button registerClientButton;
     @FXML private Label errorLabel;
+    @FXML private Button registerButton;
 
     private UserService userService;
 
@@ -72,7 +72,7 @@ public class LoginController {
     }
 
     @FXML
-    private void handleRegisterClient() {
+    private void handleRegister() {
         try {
             logger.debug("Tentative de chargement de /fxml/register-client.fxml");
             FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/fxml/register-client.fxml"));
@@ -82,7 +82,7 @@ public class LoginController {
             Scene scene = new Scene(loader.load());
             scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
-            Stage stage = (Stage) registerClientButton.getScene().getWindow();
+            Stage stage = (Stage) registerButton.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Inscription Client");
             stage.setMaximized(false);

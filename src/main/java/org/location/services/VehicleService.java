@@ -7,6 +7,7 @@ import org.location.factory.HibernateFactory;
 import org.location.models.Vehicle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.location.factory.VehicleFactory;
 
 import java.util.List;
 
@@ -30,7 +31,8 @@ public class VehicleService {
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
             logger.info("Insertion du véhicule: {}, {}, {}, {}", marque, modele, tarif, immatriculation);
             Transaction tx = session.beginTransaction();
-            Vehicle vehicle = new Vehicle(marque.trim(), modele.trim(), tarif, immatriculation.trim());
+            VehicleFactory factory = new VehicleFactory();
+            Vehicle vehicle = factory.createVehicle(marque.trim(), modele.trim(), tarif, immatriculation.trim());
             session.save(vehicle);
             tx.commit();
             logger.info("Véhicule inséré avec succès. ID = {}", vehicle.getId());
@@ -42,13 +44,15 @@ public class VehicleService {
 
     public long countAvailableVehicles() {
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            Query<Long> query = session.createQuery("SELECT COUNT(v) FROM Vehicle v", Long.class);
+            Query<Long> query = session.createQuery(
+                    "SELECT COUNT(v) FROM Vehicle v WHERE v.disponible = true", Long.class);
             return query.getSingleResult();
         } catch (Exception e) {
-            logger.error("Erreur lors du comptage", e);
+            logger.error("Erreur lors du comptage des véhicules disponibles", e);
             throw new RuntimeException("Échec du comptage", e);
         }
     }
+
 
     public List<Vehicle> getAllVehicles() {
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {

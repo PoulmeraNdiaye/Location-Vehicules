@@ -38,7 +38,6 @@ public class AddDriverController {
                 chauffeurToEdit.setDispo(dispo);
                 chauffeurService.updateChauffeur(chauffeurToEdit);
             } else {
-                Chauffeur newChauffeur = new Chauffeur(nom, dispo);
                 chauffeurService.insertChauffeur(nom, dispo);
             }
 

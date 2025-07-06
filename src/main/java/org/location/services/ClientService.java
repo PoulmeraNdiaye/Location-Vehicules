@@ -7,6 +7,7 @@ import org.location.factory.HibernateFactory;
 import org.location.models.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.location.factory.ClientFactory;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,7 +29,8 @@ public class ClientService {
             Transaction tx = null;
             try {
                 tx = session.beginTransaction();
-                Client client = new Client(nom.trim(), email.trim());
+                ClientFactory factory = new ClientFactory();
+                Client client = factory.createClient(nom.trim(), email.trim());
                 session.save(client);
                 tx.commit();
                 logger.info("Client inséré avec succès : id={}", client.getId());
