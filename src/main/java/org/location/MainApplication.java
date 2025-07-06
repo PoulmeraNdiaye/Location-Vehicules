@@ -35,7 +35,7 @@ public class MainApplication extends Application {
             logger.error("Erreur lors du chargement de l'interface de connexion", e);
             throw new RuntimeException("Impossible de démarrer l'application", e);
         }
-    }
+    }   
 
     public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
