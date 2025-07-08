@@ -24,6 +24,7 @@ public class MainApplication extends Application {
             Scene scene = new Scene(fxmlLoader.load());
             URL cssUrl = getClass().getResource("/css/styles.css");
             if (cssUrl != null) {
+
                 scene.getStylesheets().add(cssUrl.toExternalForm());
             } else {
                 logger.warn("Fichier CSS '/css/styles.css' introuvable, continuation sans CSS.");

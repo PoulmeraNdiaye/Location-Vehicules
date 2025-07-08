@@ -4,6 +4,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.location.models.Chauffeur;
+import org.location.observer.DataNotifier;
 import org.location.services.ChauffeurService;
 
 public class AddDriverController {
@@ -15,6 +16,7 @@ public class AddDriverController {
 
     private final ChauffeurService chauffeurService = new ChauffeurService();
     private Chauffeur chauffeurToEdit = null;
+    private DataNotifier notifier;
 
     public void setChauffeurToEdit(Chauffeur chauffeur) {
         this.chauffeurToEdit = chauffeur;
@@ -38,8 +40,10 @@ public class AddDriverController {
                 chauffeurToEdit.setDispo(dispo);
                 chauffeurService.updateChauffeur(chauffeurToEdit);
             } else {
-                Chauffeur newChauffeur = new Chauffeur(nom, dispo);
                 chauffeurService.insertChauffeur(nom, dispo);
+            }
+            if (notifier != null) {
+                notifier.notifyObservers();
             }
 
             Stage stage = (Stage) saveButton.getScene().getWindow();
@@ -61,4 +65,8 @@ public class AddDriverController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+    public void setNotifier(DataNotifier notifier) {
+        this.notifier = notifier;
+    }
+
 }

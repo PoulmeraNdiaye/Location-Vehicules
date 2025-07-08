@@ -5,35 +5,31 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DBManager {
-    private static Connection connection = null;
+    private static Connection connection;
 
-    public static Connection getConnection() throws Exception {
-        if (connection != null && !connection.isClosed()) {
-            return connection;
+    private static final String URL = "jdbc:mysql://localhost:3306/dbvehicules-hbm?serverTimezone=UTC&useSSL=false";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
+
+    private DBManager() {}
+
+    public static Connection getInstance() {
+        if (connection == null) {
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+            }
         }
-
-        try {
-
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-
-            connection = DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/dbvehicules-hbm?serverTimezone=UTC&useSSL=false",
-                    "root",
-                    ""
-            );
-            return connection;
-        } catch (ClassNotFoundException e) {
-            throw new Exception("Driver Class not found: " + e.getMessage());
-        } catch (SQLException e) {
-            throw new Exception("Error: Unable to open connection with database: " + e.getMessage());
-        }
+        return connection;
     }
 
-    public static void closeConnection() {
+    public static void close() {
         if (connection != null) {
             try {
                 connection.close();
+                connection = null;
             } catch (SQLException e) {
                 e.printStackTrace();
             }

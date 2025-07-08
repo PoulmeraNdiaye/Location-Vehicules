@@ -4,6 +4,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.location.factory.HibernateFactory;
 import org.location.models.Chauffeur;
+import org.location.factory.ChauffeurFactory;
 
 import java.util.List;
 
@@ -12,7 +13,8 @@ public class ChauffeurService {
     public void insertChauffeur(String nom, boolean dispo) {
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
             Transaction tx = session.beginTransaction();
-            Chauffeur chauffeur = new Chauffeur(nom, dispo);
+            ChauffeurFactory factory = new ChauffeurFactory();
+            Chauffeur chauffeur = factory.createChauffeur(nom, dispo);
             session.save(chauffeur);
             tx.commit();
         }
