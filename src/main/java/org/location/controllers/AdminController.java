@@ -7,6 +7,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
+import org.location.observer.DataNotifier;
 import org.location.services.ClientService;
 import org.location.services.VehicleService;
 import org.location.utils.SessionManager;
@@ -25,7 +26,7 @@ public class AdminController {
     private VehicleService vehicleService;
     private ClientService clientService;
     // private ReservationService reservationService;
-
+    private final DataNotifier notifier = new DataNotifier();
     public void initialize() {
 
         vehicleService = new VehicleService();
@@ -76,6 +77,8 @@ public class AdminController {
             Tab vehicleTab = new Tab("Gestion Véhicules");
             vehicleTab.setContent(loader.load());
 
+
+
             mainTabPane.getTabs().add(vehicleTab);
             mainTabPane.getSelectionModel().select(vehicleTab);
 
@@ -124,6 +127,10 @@ public class AdminController {
             );
             Tab driverTab = new Tab("Gestion Chauffeurs");
             driverTab.setContent(loader.load());
+
+            DriverManagementController chauffeurController = loader.getController();
+            chauffeurController.setNotifier(notifier);
+            notifier.attach(chauffeurController);
 
             mainTabPane.getTabs().add(driverTab);
             mainTabPane.getSelectionModel().select(driverTab);
@@ -191,6 +198,9 @@ public class AdminController {
             FXMLLoader loader = new FXMLLoader(
                     MainApplication.class.getResource("/fxml/add-vehicle.fxml")
             );
+
+            AddDriverController controller = loader.getController();
+            controller.setNotifier(notifier);
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Ajouter un Véhicule");

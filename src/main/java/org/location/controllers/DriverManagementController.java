@@ -12,11 +12,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.models.Chauffeur;
+import org.location.observer.DataNotifier;
+import org.location.observer.Observer;
 import org.location.services.ChauffeurService;
 
 import java.util.List;
 
-public class DriverManagementController {
+public class DriverManagementController implements Observer {
 
     @FXML private TableView<Chauffeur> driverTable;
     @FXML private TableColumn<Chauffeur, Long> idColumn;
@@ -24,6 +26,7 @@ public class DriverManagementController {
     @FXML private TableColumn<Chauffeur, String> dispoColumn;
 
     private final ChauffeurService chauffeurService = new ChauffeurService();
+    private DataNotifier notifier;
 
     @FXML
     public void initialize() {
@@ -105,5 +108,14 @@ public class DriverManagementController {
         alert.setHeaderText(null);
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    @Override
+    public void update() {
+        refreshTable();
+    }
+
+    public void setNotifier(DataNotifier notifier) {
+        this.notifier = notifier;
     }
 }

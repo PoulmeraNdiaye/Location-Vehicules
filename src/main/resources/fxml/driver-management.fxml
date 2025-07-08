@@ -27,7 +27,7 @@
             </columns>
         </TableView>
         <HBox alignment="CENTER" spacing="10">
-            <Button onAction="#refreshTable" text="Rafraîchir" />
+
             <Button onAction="#handleAddDriver" text="Ajouter Chauffeur" />
             <Button onAction="#handleEditDriver" text="Modifier" />
             <Button onAction="#handleDeleteDriver" text="Supprimer" />
