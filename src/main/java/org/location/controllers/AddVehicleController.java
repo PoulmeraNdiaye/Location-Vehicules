@@ -55,11 +55,17 @@ public class AddVehicleController {
                 vehicleToEdit.setModele(modele);
                 vehicleToEdit.setTarif(tarif);
                 vehicleToEdit.setImmatriculation(immatriculation);
-
-                vehicleService.updateVehicle(vehicleToEdit);
+                vehicleService.modifierVehicle(vehicleToEdit);
             } else {
                 // Mode ajout
-                vehicleService.insertVehicle(marque, modele, tarif, immatriculation);
+                Vehicle vehicle = new Vehicle();
+                vehicle.setMarque(marque);
+                vehicle.setModele(modele);
+                vehicle.setTarif(tarif);
+                vehicle.setImmatriculation(immatriculation);
+                vehicle.setDisponible(true);
+
+                vehicleService.ajouterVehicle(vehicle);
             }
 
             Stage stage = (Stage) saveButton.getScene().getWindow();
@@ -69,6 +75,7 @@ public class AddVehicleController {
             showError("Erreur lors de l'enregistrement du véhicule : " + e.getMessage());
         }
     }
+
 
     @FXML
     private void handleCancel() {

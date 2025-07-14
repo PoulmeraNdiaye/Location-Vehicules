@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Vehicle {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private int id;
 
     @Column(nullable = false)
     private String marque;
@@ -34,8 +34,8 @@ public class Vehicle {
         this.disponible = true;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
     public String getMarque() { return marque; }
     public void setMarque(String marque) { this.marque = marque; }

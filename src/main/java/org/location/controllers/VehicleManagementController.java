@@ -52,7 +52,7 @@ public class VehicleManagementController {
     @FXML
     private void refreshTable() {
         try {
-            List<Vehicle> vehiclesList = vehicleService.getAvailableVehicles();
+            List<Vehicle> vehiclesList = vehicleService.getAllVehicles();
             System.out.println("Véhicules récupérés : ");
             vehiclesList.forEach(System.out::println);
             ObservableList<Vehicle> vehicles = FXCollections.observableArrayList(vehiclesList);
@@ -116,7 +116,8 @@ public class VehicleManagementController {
             confirm.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     try {
-                        vehicleService.deleteVehicle(selected);
+                        vehicleService.supprimerVehicle(selected.getId());
+
                         refreshTable();
                     } catch (Exception e) {
                         showError("Erreur lors de la suppression : " + e.getMessage());

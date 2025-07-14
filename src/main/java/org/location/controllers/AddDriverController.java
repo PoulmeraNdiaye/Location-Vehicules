@@ -3,6 +3,7 @@ package org.location.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.location.exception.DAOException;
 import org.location.models.Chauffeur;
 import org.location.observer.DataNotifier;
 import org.location.services.ChauffeurService;
@@ -26,32 +27,35 @@ public class AddDriverController {
 
     @FXML
     private void handleSave() {
+        String nom = nomField.getText();
+        boolean dispo = dispoCheckBox.isSelected();
+
+        if (nom == null || nom.isBlank()) {
+            showError("Le nom ne peut pas être vide.");
+            return;
+        }
+
         try {
-            String nom = nomField.getText().trim();
-            boolean dispo = dispoCheckBox.isSelected();
-
-            if (nom.isEmpty()) {
-                showError("Le nom est obligatoire.");
-                return;
-            }
-
-            if (chauffeurToEdit != null) {
+            if (chauffeurToEdit == null) {
+                Chauffeur chauffeur = new Chauffeur();
+                chauffeur.setNom(nom);
+                chauffeur.setDispo(dispo);
+                chauffeurService.ajouterChauffeur(chauffeur);
+            } else {
                 chauffeurToEdit.setNom(nom);
                 chauffeurToEdit.setDispo(dispo);
-                chauffeurService.updateChauffeur(chauffeurToEdit);
-            } else {
-                chauffeurService.insertChauffeur(nom, dispo);
-            }
-            if (notifier != null) {
-                notifier.notifyObservers();
+                chauffeurService.modifierChauffeur(chauffeurToEdit);
             }
 
-            Stage stage = (Stage) saveButton.getScene().getWindow();
+            Stage stage = (Stage) nomField.getScene().getWindow();
             stage.close();
-        } catch (Exception e) {
+
+        } catch (DAOException e) {
+            e.printStackTrace();
             showError("Erreur lors de l'enregistrement : " + e.getMessage());
         }
     }
+
 
     @FXML
     private void handleCancel() {

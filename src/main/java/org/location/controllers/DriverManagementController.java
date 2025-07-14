@@ -11,6 +11,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
+import org.location.exception.DAOException;
 import org.location.models.Chauffeur;
 import org.location.observer.DataNotifier;
 import org.location.observer.Observer;
@@ -43,9 +44,14 @@ public class DriverManagementController implements Observer {
 
     @FXML
     private void refreshTable() {
-        List<Chauffeur> chauffeurs = chauffeurService.getAllChauffeurs();
-        ObservableList<Chauffeur> data = FXCollections.observableArrayList(chauffeurs);
-        driverTable.setItems(data);
+        try {
+            List<Chauffeur> chauffeurs = chauffeurService.getAllChauffeurs();
+            ObservableList<Chauffeur> data = FXCollections.observableArrayList(chauffeurs);
+            driverTable.setItems(data);
+        } catch (DAOException e) {
+            e.printStackTrace();
+            showAlert("Erreur lors du chargement des chauffeurs : " + e.getMessage());
+        }
     }
 
     @FXML
@@ -72,14 +78,20 @@ public class DriverManagementController implements Observer {
             confirm.setHeaderText("Supprimer le chauffeur sélectionné ?");
             confirm.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    chauffeurService.deleteChauffeur(selected);
-                    refreshTable();
+                    try {
+                        chauffeurService.supprimerChauffeur(selected.getId());
+                        refreshTable();
+                    } catch (DAOException e) {
+                        e.printStackTrace();
+                        showAlert("Erreur lors de la suppression : " + e.getMessage());
+                    }
                 }
             });
         } else {
             showAlert("Veuillez sélectionner un chauffeur à supprimer.");
         }
     }
+
 
     private void openDriverForm(Chauffeur chauffeur) {
         try {
