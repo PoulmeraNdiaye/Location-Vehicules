@@ -8,11 +8,13 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.observer.DataNotifier;
+import org.location.observer.NotifierSingleton;
+import org.location.observer.Observer;
 import org.location.services.ClientService;
 import org.location.services.VehicleService;
 import org.location.utils.SessionManager;
 
-public class AdminController {
+public class AdminController implements Observer {
 
     @FXML private TabPane mainTabPane;
     @FXML private Label userLabel;
@@ -26,8 +28,10 @@ public class AdminController {
     private VehicleService vehicleService;
     private ClientService clientService;
     // private ReservationService reservationService;
-    private final DataNotifier notifier = new DataNotifier();
+    private final DataNotifier notifier = NotifierSingleton.getInstance();
+
     public void initialize() {
+        notifier.attach(this);
 
         vehicleService = new VehicleService();
         clientService = new ClientService();
@@ -77,6 +81,8 @@ public class AdminController {
             Tab vehicleTab = new Tab("Gestion Véhicules");
             vehicleTab.setContent(loader.load());
 
+            VehicleManagementController vehicleController = loader.getController();
+            notifier.attach(vehicleController);
 
 
             mainTabPane.getTabs().add(vehicleTab);
@@ -103,6 +109,8 @@ public class AdminController {
             );
             Tab clientTab = new Tab("Gestion Clients");
             clientTab.setContent(loader.load());
+            ClientManagementController clientController = loader.getController();
+            notifier.attach(clientController);
 
             mainTabPane.getTabs().add(clientTab);
             mainTabPane.getSelectionModel().select(clientTab);
@@ -129,7 +137,6 @@ public class AdminController {
             driverTab.setContent(loader.load());
 
             DriverManagementController chauffeurController = loader.getController();
-            chauffeurController.setNotifier(notifier);
             notifier.attach(chauffeurController);
 
             mainTabPane.getTabs().add(driverTab);
@@ -200,7 +207,6 @@ public class AdminController {
             );
 
             AddDriverController controller = loader.getController();
-            controller.setNotifier(notifier);
 
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Ajouter un Véhicule");
@@ -238,7 +244,7 @@ public class AdminController {
             scene.getStylesheets().add(
                     MainApplication.class.getResource("/css/styles.css").toExternalForm()
             );
-
+            RegisterClientController registerClientController = loader.getController();
             dialogStage.setScene(scene);
             dialogStage.showAndWait();
 
@@ -312,4 +318,9 @@ public class AdminController {
 
         statusLabel.setText("Erreur: " + message);
     }
+    @Override
+    public void update() {
+        loadDashboardStatistics();
+    }
+
 }

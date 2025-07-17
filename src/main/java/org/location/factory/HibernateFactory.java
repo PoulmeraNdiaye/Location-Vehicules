@@ -5,9 +5,7 @@ import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
-import org.location.models.Client;
-import org.location.models.User;
-import org.location.models.Vehicle;
+import org.location.models.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +26,11 @@ public class HibernateFactory {
                 sources.addAnnotatedClass(Vehicle.class);
                 sources.addAnnotatedClass(Client.class);
                 sources.addAnnotatedClass(User.class);
+                sources.addAnnotatedClass(Admin.class);
+                sources.addAnnotatedClass(Chauffeur.class);
+                sources.addAnnotatedClass(Reservation.class);
+
+
                 Metadata meta = sources.getMetadataBuilder().build();
                 meta.getEntityBindings().forEach(entity -> {
                     logger.info("Entité mappée : {}", entity.getClassName());

@@ -7,7 +7,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.models.User;
-import org.location.utils.UserService;
+import org.location.services.UserService;
 import org.location.utils.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

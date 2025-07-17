@@ -1,94 +1,57 @@
 package org.location.services;
 
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.query.Query;
-import org.location.factory.HibernateFactory;
+import org.location.dao.VehicleDAO;
+import org.location.dao.impl.VehicleDAOImpl;
+import org.location.exception.DAOException;
+import org.location.factory.ConcreteFactory;
+import org.location.factory.interfaces.VehicleFactory;
 import org.location.models.Vehicle;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.location.factory.VehicleFactory;
+import org.location.observer.DataNotifier;
+import org.location.observer.NotifierSingleton;
 
 import java.util.List;
 
 public class VehicleService {
-    private static final Logger logger = LoggerFactory.getLogger(VehicleService.class);
+   // private final VehicleDAO vehicleDAO = new VehicleDAOImpl();
+    private final VehicleDAOImpl vehicleDAO = (VehicleDAOImpl) ConcreteFactory
+            .getFactory(VehicleFactory.class)
+            .getVehicleDao(VehicleDAOImpl.class);
+    private final DataNotifier notifier = NotifierSingleton.getInstance();
 
-    public void insertVehicle(String marque, String modele, double tarif, String immatriculation) {
-        if (marque == null || marque.trim().isEmpty()) {
-            throw new IllegalArgumentException("La marque est obligatoire.");
-        }
-        if (modele == null || modele.trim().isEmpty()) {
-            throw new IllegalArgumentException("Le modèle est obligatoire.");
-        }
-        if (tarif <= 0) {
-            throw new IllegalArgumentException("Le tarif doit être supérieur à 0.");
-        }
-        if (immatriculation == null || immatriculation.trim().isEmpty()) {
-            throw new IllegalArgumentException("L'immatriculation est obligatoire.");
-        }
 
-        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            logger.info("Insertion du véhicule: {}, {}, {}, {}", marque, modele, tarif, immatriculation);
-            Transaction tx = session.beginTransaction();
-            VehicleFactory factory = new VehicleFactory();
-            Vehicle vehicle = factory.createVehicle(marque.trim(), modele.trim(), tarif, immatriculation.trim());
-            session.save(vehicle);
-            tx.commit();
-            logger.info("Véhicule inséré avec succès. ID = {}", vehicle.getId());
-        } catch (Exception e) {
-            logger.error("Erreur lors de l'insertion du véhicule", e);
-            throw new RuntimeException("Échec d'insertion du véhicule", e);
-        }
+
+    public void ajouterVehicle(Vehicle vehicle) throws DAOException {
+        vehicleDAO.create(vehicle);
+        if (notifier != null) notifier.notifyObservers();
+
     }
 
-    public long countAvailableVehicles() {
-        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            Query<Long> query = session.createQuery(
-                    "SELECT COUNT(v) FROM Vehicle v WHERE v.disponible = true", Long.class);
-            return query.getSingleResult();
-        } catch (Exception e) {
-            logger.error("Erreur lors du comptage des véhicules disponibles", e);
-            throw new RuntimeException("Échec du comptage", e);
-        }
+    public List<Vehicle> getAllVehicles() throws DAOException {
+        return vehicleDAO.list();
     }
 
-
-    public List<Vehicle> getAllVehicles() {
-        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            Query<Vehicle> query = session.createQuery("FROM Vehicle", Vehicle.class);
-            return query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-            logger.error("Erreur lors de la récupération des véhicules", e);
-            throw new RuntimeException("Échec de récupération", e);
-        }
-    }
-    public static void updateVehicle(Vehicle vehicle) {
-        Transaction tx = null;
-        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.update(vehicle);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            e.printStackTrace();
-        }
-    }
-    public void deleteVehicle(Vehicle vehicle) {
-        Transaction tx = null;
-        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            tx = session.beginTransaction();
-            session.delete(vehicle);
-            tx.commit();
-        } catch (Exception e) {
-            if (tx != null) tx.rollback();
-            throw new RuntimeException("Erreur lors de la suppression", e);
-        }
+    public Vehicle chercherParId(int id) throws DAOException {
+        return vehicleDAO.read(id);
     }
 
+    public void modifierVehicle(Vehicle vehicle) throws DAOException {
+        vehicleDAO.update(vehicle);
+        if (notifier != null) notifier.notifyObservers();
 
-    public List<Vehicle> getAvailableVehicles() {
-        return getAllVehicles();
     }
+
+    public void supprimerVehicle(int id) throws DAOException {
+        vehicleDAO.delete(id);
+        if (notifier != null) notifier.notifyObservers();
+
+    }
+
+    public List<Vehicle> getAvailableVehicles() throws DAOException {
+        List<Vehicle> all = vehicleDAO.list();
+        return all.stream().filter(Vehicle::getDisponible).toList();
+    }
+    public long countAvailableVehicles() throws DAOException {
+        return getAvailableVehicles().size();
+    }
+
 }

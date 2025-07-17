@@ -13,12 +13,15 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.models.Vehicle;
+import org.location.observer.DataNotifier;
+import org.location.observer.NotifierSingleton;
+import org.location.observer.Observer;
 import org.location.services.VehicleService;
 import org.location.utils.SceneManager;
 
 import java.util.List;
 
-public class VehicleManagementController {
+public class VehicleManagementController implements Observer {
 
     @FXML private TableView<Vehicle> vehicleTable;
     @FXML private TableColumn<Vehicle, Long> idColumn;
@@ -30,6 +33,9 @@ public class VehicleManagementController {
     @FXML private TableColumn<Vehicle, String> disponibleColumn;
 
     private final VehicleService vehicleService = new VehicleService();
+
+    private final DataNotifier notifier = NotifierSingleton.getInstance();
+
 
     @FXML
     public void initialize() {
@@ -46,13 +52,14 @@ public class VehicleManagementController {
 
         vehicleTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
+        notifier.attach(this);
         refreshTable();
     }
 
     @FXML
     private void refreshTable() {
         try {
-            List<Vehicle> vehiclesList = vehicleService.getAvailableVehicles();
+            List<Vehicle> vehiclesList = vehicleService.getAllVehicles();
             System.out.println("Véhicules récupérés : ");
             vehiclesList.forEach(System.out::println);
             ObservableList<Vehicle> vehicles = FXCollections.observableArrayList(vehiclesList);
@@ -116,7 +123,11 @@ public class VehicleManagementController {
             confirm.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
                     try {
-                        vehicleService.deleteVehicle(selected);
+                        vehicleService.supprimerVehicle(selected.getId());
+                        if (notifier != null) {
+                            notifier.notifyObservers();
+                        }
+
                         refreshTable();
                     } catch (Exception e) {
                         showError("Erreur lors de la suppression : " + e.getMessage());
@@ -130,6 +141,10 @@ public class VehicleManagementController {
             alert.setContentText("Veuillez sélectionner un véhicule à supprimer.");
             alert.showAndWait();
         }
+    }
+    @Override
+    public void update() {
+        refreshTable();
     }
 
 }

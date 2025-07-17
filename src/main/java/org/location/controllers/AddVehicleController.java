@@ -6,6 +6,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import org.location.models.Vehicle;
+import org.location.observer.DataNotifier;
+import org.location.observer.NotifierSingleton;
 import org.location.services.VehicleService;
 
 public class AddVehicleController {
@@ -19,6 +21,7 @@ public class AddVehicleController {
 
     private VehicleService vehicleService;
     private Vehicle vehicleToEdit = null;
+    private final DataNotifier notifier = NotifierSingleton.getInstance();
 
     public void initialize() {
         vehicleService = new VehicleService();
@@ -50,16 +53,23 @@ public class AddVehicleController {
             }
 
             if (vehicleToEdit != null) {
-                // Mode édition
                 vehicleToEdit.setMarque(marque);
                 vehicleToEdit.setModele(modele);
                 vehicleToEdit.setTarif(tarif);
                 vehicleToEdit.setImmatriculation(immatriculation);
-
-                vehicleService.updateVehicle(vehicleToEdit);
+                vehicleService.modifierVehicle(vehicleToEdit);
             } else {
-                // Mode ajout
-                vehicleService.insertVehicle(marque, modele, tarif, immatriculation);
+                Vehicle vehicle = new Vehicle();
+                vehicle.setMarque(marque);
+                vehicle.setModele(modele);
+                vehicle.setTarif(tarif);
+                vehicle.setImmatriculation(immatriculation);
+                vehicle.setDisponible(true);
+
+                vehicleService.ajouterVehicle(vehicle);
+            }
+            if (notifier != null) {
+                notifier.notifyObservers();
             }
 
             Stage stage = (Stage) saveButton.getScene().getWindow();
@@ -69,6 +79,7 @@ public class AddVehicleController {
             showError("Erreur lors de l'enregistrement du véhicule : " + e.getMessage());
         }
     }
+
 
     @FXML
     private void handleCancel() {
@@ -92,4 +103,5 @@ public class AddVehicleController {
         alert.setContentText(message);
         alert.showAndWait();
     }
+
 }

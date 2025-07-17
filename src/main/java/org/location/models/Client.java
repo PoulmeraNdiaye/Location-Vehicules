@@ -1,53 +1,34 @@
 package org.location.models;
 
-import javax.persistence.*;
-import java.util.Objects;
-
+import  javax.persistence.*;
 @Entity
+//@DiscriminatorValue("CLIENT")
 @Table(name = "clients")
-public class Client {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@PrimaryKeyJoinColumn(name = "id")
+public class Client extends User {
 
-    @Column(name = "nom", nullable = false)
-    private String nom;
 
-    @Column(name = "email", nullable = false, unique = true)
+    @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(name = "pointsFidelite", nullable = false)
-    private Integer pointsFidelite;
+    @Column(nullable = false)
+    private Integer pointsFidelite = 0;
 
-    public Client() {
-        this.pointsFidelite = 0; // Valeur par défaut
-    }
+    public Client() {}
 
-    public Client(String nom, String email) {
-        this.nom = nom;
-        this.email = email;
+    public Client(String nom, String email, String login, String motDePasse) {
+        setNom(nom);
+        setEmail(email);
+        setLogin(login);
+        setMotDePasse(motDePasse);
+        setRole(Role.CLIENT);
         this.pointsFidelite = 0;
     }
 
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getNom() { return nom; }
-    public void setNom(String nom) { this.nom = nom; }
+
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+
     public Integer getPointsFidelite() { return pointsFidelite; }
     public void setPointsFidelite(Integer pointsFidelite) { this.pointsFidelite = pointsFidelite; }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Client client = (Client) o;
-        return Objects.equals(id, client.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

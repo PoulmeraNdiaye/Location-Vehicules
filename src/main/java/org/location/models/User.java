@@ -1,62 +1,30 @@
 package org.location.models;
 
-import javax.persistence.*;
+import  javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
+//@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "users")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(name = "nom", nullable = false)
+    @Column(nullable = false)
     private String nom;
 
-    @Column(name = "login", nullable = false, unique = true)
+    @Column(nullable = false)
     private String login;
 
-    @Column(name = "motDePasse", nullable = false)
+    @Column(nullable = false)
     private String motDePasse;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(nullable = false)
     private Role role;
-
-    @OneToOne(fetch = FetchType.LAZY, optional = true)
-    @JoinColumn(name = "client_id", referencedColumnName = "id")
-    private Client client;
-
-    public enum Role {
-        ADMIN, EMPLOYEE, CLIENT
-    }
-
-    public User() {}
-
-    public User(String nom, String login, String motDePasse, Role role) {
-        this.nom = nom;
-        this.login = login;
-        this.motDePasse = motDePasse;
-        this.role = role;
-    }
-
-    public User(String nom, String login, String motDePasse, Role role, Client client) {
-        this.nom = nom;
-        this.login = login;
-        this.motDePasse = motDePasse;
-        this.role = role;
-        this.client = client;
-    }
-
-    // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
+    //public abstract String getNom();
     public String getNom() {
         return nom;
     }
@@ -65,59 +33,35 @@ public class User {
         this.nom = nom;
     }
 
-    public String getLogin() {
-        return login;
+    public enum Role {
+        ADMIN, EMPLOYEE, CLIENT
     }
 
-    public void setLogin(String login) {
-        this.login = login;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getMotDePasse() {
-        return motDePasse;
-    }
 
-    public void setMotDePasse(String motDePasse) {
-        this.motDePasse = motDePasse;
-    }
 
-    public Role getRole() {
-        return role;
-    }
+    public String getLogin() { return login; }
+    public void setLogin(String login) { this.login = login; }
 
-    public void setRole(Role role) {
-        this.role = role;
-    }
+    public String getMotDePasse() { return motDePasse; }
+    public void setMotDePasse(String motDePasse) { this.motDePasse = motDePasse; }
 
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (!(o instanceof User)) return false;
         User user = (User) o;
         return Objects.equals(id, user.id);
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(id);
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", nom='" + nom + '\'' +
-                ", login='" + login + '\'' +
-                ", role=" + role +
-                ", client=" + (client != null ? client.getId() : null) +
-                '}';
     }
 }

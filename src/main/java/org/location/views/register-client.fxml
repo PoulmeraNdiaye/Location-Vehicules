@@ -30,6 +30,12 @@
                         <TextField fx:id="emailField" promptText="Entrez votre email" />
                     </children>
                 </VBox>
+                <VBox spacing="5.0">
+                    <children>
+                        <Label text="Mot de passe :" />
+                        <PasswordField fx:id="passwordField" promptText="Mot de passe" />
+                    </children>
+                </VBox>
 
                 <Button fx:id="registerButton" mnemonicParsing="false" onAction="#handleRegister"
                         prefWidth="200.0" text="S'inscrire" />

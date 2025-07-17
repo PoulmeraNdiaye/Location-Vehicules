@@ -32,9 +32,9 @@
 
         <!-- Hibernate ORM -->
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.6.15.Final</version>
+            <version>6.5.2.Final</version>
         </dependency>
 
         <!-- MySQL Connector -->

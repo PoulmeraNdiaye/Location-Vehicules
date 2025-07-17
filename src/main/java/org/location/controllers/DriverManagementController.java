@@ -11,8 +11,10 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
+import org.location.exception.DAOException;
 import org.location.models.Chauffeur;
 import org.location.observer.DataNotifier;
+import org.location.observer.NotifierSingleton;
 import org.location.observer.Observer;
 import org.location.services.ChauffeurService;
 
@@ -26,10 +28,11 @@ public class DriverManagementController implements Observer {
     @FXML private TableColumn<Chauffeur, String> dispoColumn;
 
     private final ChauffeurService chauffeurService = new ChauffeurService();
-    private DataNotifier notifier;
+    private final DataNotifier notifier = NotifierSingleton.getInstance();
 
     @FXML
     public void initialize() {
+        notifier.attach(this);
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
         nomColumn.setCellValueFactory(new PropertyValueFactory<>("nom"));
         dispoColumn.setCellValueFactory(cellData -> {
@@ -43,9 +46,14 @@ public class DriverManagementController implements Observer {
 
     @FXML
     private void refreshTable() {
-        List<Chauffeur> chauffeurs = chauffeurService.getAllChauffeurs();
-        ObservableList<Chauffeur> data = FXCollections.observableArrayList(chauffeurs);
-        driverTable.setItems(data);
+        try {
+            List<Chauffeur> chauffeurs = chauffeurService.getAllChauffeurs();
+            ObservableList<Chauffeur> data = FXCollections.observableArrayList(chauffeurs);
+            driverTable.setItems(data);
+        } catch (DAOException e) {
+            e.printStackTrace();
+            showAlert("Erreur lors du chargement des chauffeurs : " + e.getMessage());
+        }
     }
 
     @FXML
@@ -72,14 +80,20 @@ public class DriverManagementController implements Observer {
             confirm.setHeaderText("Supprimer le chauffeur sélectionné ?");
             confirm.showAndWait().ifPresent(response -> {
                 if (response == ButtonType.OK) {
-                    chauffeurService.deleteChauffeur(selected);
-                    refreshTable();
+                    try {
+                        chauffeurService.supprimerChauffeur(selected.getId());
+                        refreshTable();
+                    } catch (DAOException e) {
+                        e.printStackTrace();
+                        showAlert("Erreur lors de la suppression : " + e.getMessage());
+                    }
                 }
             });
         } else {
             showAlert("Veuillez sélectionner un chauffeur à supprimer.");
         }
     }
+
 
     private void openDriverForm(Chauffeur chauffeur) {
         try {
@@ -93,7 +107,6 @@ public class DriverManagementController implements Observer {
             if (chauffeur != null) {
                 controller.setChauffeurToEdit(chauffeur);
             }
-
             dialogStage.showAndWait();
             refreshTable();
         } catch (Exception e) {
@@ -115,7 +128,5 @@ public class DriverManagementController implements Observer {
         refreshTable();
     }
 
-    public void setNotifier(DataNotifier notifier) {
-        this.notifier = notifier;
-    }
+
 }

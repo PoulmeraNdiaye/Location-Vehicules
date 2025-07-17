@@ -27,7 +27,6 @@
         </TableView>
 
         <HBox spacing="10" alignment="CENTER">
-            <Button text="Rafraîchir" onAction="#refreshTable"/>
             <Button text="Ajouter Client" onAction="#handleAddClient"/>
         </HBox>
     </children>

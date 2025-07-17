@@ -3,8 +3,10 @@ package org.location.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.location.exception.DAOException;
 import org.location.models.Chauffeur;
 import org.location.observer.DataNotifier;
+import org.location.observer.NotifierSingleton;
 import org.location.services.ChauffeurService;
 
 public class AddDriverController {
@@ -16,7 +18,7 @@ public class AddDriverController {
 
     private final ChauffeurService chauffeurService = new ChauffeurService();
     private Chauffeur chauffeurToEdit = null;
-    private DataNotifier notifier;
+    private final DataNotifier notifier = NotifierSingleton.getInstance();
 
     public void setChauffeurToEdit(Chauffeur chauffeur) {
         this.chauffeurToEdit = chauffeur;
@@ -26,32 +28,39 @@ public class AddDriverController {
 
     @FXML
     private void handleSave() {
+        String nom = nomField.getText();
+        boolean dispo = dispoCheckBox.isSelected();
+
+        if (nom == null || nom.isBlank()) {
+            showError("Le nom ne peut pas être vide.");
+            return;
+        }
+
         try {
-            String nom = nomField.getText().trim();
-            boolean dispo = dispoCheckBox.isSelected();
-
-            if (nom.isEmpty()) {
-                showError("Le nom est obligatoire.");
-                return;
-            }
-
-            if (chauffeurToEdit != null) {
+            if (chauffeurToEdit == null) {
+                Chauffeur chauffeur = new Chauffeur();
+                chauffeur.setNom(nom);
+                chauffeur.setDispo(dispo);
+                chauffeurService.ajouterChauffeur(chauffeur);
+            } else {
                 chauffeurToEdit.setNom(nom);
                 chauffeurToEdit.setDispo(dispo);
-                chauffeurService.updateChauffeur(chauffeurToEdit);
-            } else {
-                chauffeurService.insertChauffeur(nom, dispo);
+                chauffeurService.modifierChauffeur(chauffeurToEdit);
             }
+
             if (notifier != null) {
                 notifier.notifyObservers();
             }
 
-            Stage stage = (Stage) saveButton.getScene().getWindow();
+            Stage stage = (Stage) nomField.getScene().getWindow();
             stage.close();
-        } catch (Exception e) {
+
+        } catch (DAOException e) {
+            e.printStackTrace();
             showError("Erreur lors de l'enregistrement : " + e.getMessage());
         }
     }
+
 
     @FXML
     private void handleCancel() {
@@ -65,8 +74,6 @@ public class AddDriverController {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    public void setNotifier(DataNotifier notifier) {
-        this.notifier = notifier;
-    }
+
 
 }

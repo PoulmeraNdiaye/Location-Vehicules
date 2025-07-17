@@ -11,6 +11,7 @@ import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.models.Client;
 import org.location.models.Reservation;
+import org.location.models.User;
 import org.location.services.ReservationService;
 import org.location.utils.SessionManager;
 import org.slf4j.Logger;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 
 public class ClientReservationsController {
     private static final Logger logger = LoggerFactory.getLogger(ClientReservationsController.class);
@@ -33,7 +33,6 @@ public class ClientReservationsController {
 
     private final ReservationService reservationService = new ReservationService();
 
-
     @FXML
     public void initialize() {
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -45,35 +44,30 @@ public class ClientReservationsController {
                             : "Inconnu"
             );
         });
-        dateDebutColumn.setCellValueFactory(cellData -> {
-            return new ReadOnlyStringWrapper(
-                    cellData.getValue().getDateDebut() != null
-                            ? cellData.getValue().getDateDebut().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                            : ""
-            );
-        });
-        dateFinColumn.setCellValueFactory(cellData -> {
-            return new ReadOnlyStringWrapper(
-                    cellData.getValue().getDateFin() != null
-                            ? cellData.getValue().getDateFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
-                            : ""
-            );
-        });
+        dateDebutColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(
+                cellData.getValue().getDateDebut() != null
+                        ? cellData.getValue().getDateDebut().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        : ""
+        ));
+        dateFinColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(
+                cellData.getValue().getDateFin() != null
+                        ? cellData.getValue().getDateFin().format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                        : ""
+        ));
         statutColumn.setCellValueFactory(new PropertyValueFactory<>("statut"));
 
         reservationTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         try {
-            Client client = SessionManager.getCurrentUser().getClient();
-            if (client != null) {
+            User currentUser = SessionManager.getCurrentUser();
+            if (currentUser instanceof Client client) {
                 List<Reservation> reservations = reservationService.getReservationsByClient(client);
                 reservationTable.setItems(FXCollections.observableArrayList(reservations));
                 logger.info("Réservations chargées pour le client {} : {} réservations trouvées",
                         client.getId(), reservations.size());
             } else {
-                showError("Aucun client associé à cet utilisateur.");
-                logger.warn("Aucun client trouvé pour l'utilisateur connecté : {}",
-                        SessionManager.getCurrentUser().getLogin());
+                showError("L'utilisateur connecté n'est pas un client.");
+                logger.warn("Utilisateur connecté non client : {}", currentUser.getLogin());
             }
         } catch (Exception e) {
             showError("Erreur lors du chargement des réservations : " + e.getMessage());
@@ -95,7 +89,7 @@ public class ClientReservationsController {
             stage.centerOnScreen();
 
             ClientController controller = loader.getController();
-            controller.setCurrentUser(SessionManager.getCurrentUser());
+            controller.setCurrentUser((Client) SessionManager.getCurrentUser());
 
             logger.info("Retour à l'écran principal du client");
         } catch (Exception e) {

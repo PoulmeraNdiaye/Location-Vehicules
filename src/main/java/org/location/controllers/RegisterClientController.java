@@ -4,10 +4,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-        import javafx.stage.Stage;
+import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.models.Client;
-import org.location.utils.UserService;
+import org.location.observer.DataNotifier;
+import org.location.observer.NotifierSingleton;
+import org.location.services.ClientService;
+import org.location.exception.DAOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,31 +22,31 @@ public class RegisterClientController {
     @FXML private Button registerButton;
     @FXML private Button backButton;
     @FXML private Label errorLabel;
+    @FXML private PasswordField passwordField;
 
-    private UserService userService;
+    private final ClientService clientService = new ClientService();
+    private final DataNotifier notifier = NotifierSingleton.getInstance();
 
     @FXML
     public void initialize() {
-        userService = new UserService();
-
-        // Masquer l'erreur lors de la modification des champs
         nameField.textProperty().addListener((obs, oldText, newText) -> errorLabel.setVisible(false));
         emailField.textProperty().addListener((obs, oldText, newText) -> errorLabel.setVisible(false));
+        passwordField.textProperty().addListener((obs, oldText, newText) -> errorLabel.setVisible(false));
+
     }
 
     @FXML
     private void handleRegister() {
         String nom = nameField.getText().trim();
         String email = emailField.getText().trim();
+        String motDePasse = passwordField.getText().trim();
 
-        // Validation des champs
-        if (nom.isEmpty() || email.isEmpty()) {
+        if (nom.isEmpty() || email.isEmpty()|| motDePasse.isEmpty()) {
             logger.warn("Tentative d'inscription avec des champs vides");
             showError("Veuillez remplir tous les champs");
             return;
         }
 
-        // Validation simple de l'email
         if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
             logger.warn("Email invalide : {}", email);
             showError("Veuillez entrer un email valide");
@@ -51,44 +54,42 @@ public class RegisterClientController {
         }
 
         try {
-            // Enregistrer le client
-            userService.insertClient(nom, email);
+            //Client client = new Client(nom, email);
+            //Client client = new Client(email, "1234", nom, email);
+            Client client = new Client(nom, email, email, motDePasse);
+
+
+            clientService.ajouterClient(client);
             logger.info("Inscription réussie pour le client : {}", email);
 
-            // Rediriger vers l'interface de connexion
+            if (notifier != null) {
+                notifier.notifyObservers();
+            }
             handleBack();
+        } catch (DAOException e) {
+            logger.error("Erreur DAO lors de l'inscription du client : {}", email, e);
+            showError("Erreur d'accès aux données : " + e.getMessage());
         } catch (Exception e) {
-            logger.error("Erreur lors de l'inscription du client : {}", email, e);
-            showError("Erreur lors de l'inscription : " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Erreur inattendue lors de l'inscription du client : {}", email, e);
+            showError("Erreur inattendue : " + e.getMessage());
         }
     }
 
     @FXML
     private void handleBack() {
         try {
-            logger.debug("Retour à l'interface de connexion");
-            FXMLLoader loader = new FXMLLoader(
-                    MainApplication.class.getResource("/fxml/login.fxml")
-            );
-            if (loader.getLocation() == null) {
-                throw new IllegalStateException("Le fichier /fxml/login.fxml n'a pas été trouvé");
-            }
+            FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/fxml/login.fxml"));
             Scene scene = new Scene(loader.load());
-            scene.getStylesheets().add(
-                    MainApplication.class.getResource("/css/styles.css").toExternalForm()
-            );
+            scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
             Stage stage = (Stage) backButton.getScene().getWindow();
             stage.setScene(scene);
             stage.setTitle("Connexion - Système de Location");
             stage.setMaximized(false);
             stage.centerOnScreen();
-            logger.info("Retour à l'interface de connexion réussi");
         } catch (Exception e) {
             logger.error("Erreur lors du retour à l'interface de connexion", e);
             showError("Erreur lors du retour : " + e.getMessage());
-            e.printStackTrace();
         }
     }
 
@@ -96,4 +97,5 @@ public class RegisterClientController {
         errorLabel.setText(message);
         errorLabel.setVisible(true);
     }
+
 }

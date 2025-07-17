@@ -39,6 +39,7 @@ public class MainApplication extends Application {
     }   
 
     public static void main(String[] args) {
+        HibernateFactory.getSessionFactory();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Fermeture de l'application : libération des ressources Hibernate.");
             HibernateFactory.closeSessionFactory();

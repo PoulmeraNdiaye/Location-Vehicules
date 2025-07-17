@@ -13,9 +13,12 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.models.Client;
+import org.location.observer.DataNotifier;
+import org.location.observer.NotifierSingleton;
+import org.location.observer.Observer;
 import org.location.services.ClientService;
 
-public class ClientManagementController {
+public class ClientManagementController implements Observer {
 
     @FXML private TableView<Client> clientTable;
     @FXML private TableColumn<Client, Long> idColumn;
@@ -24,6 +27,9 @@ public class ClientManagementController {
     @FXML private TableColumn<Client, Integer> pointsFideliteColumn;
 
     private ClientService clientService;
+    private final DataNotifier notifier = NotifierSingleton.getInstance();
+
+
 
     public void initialize() {
         clientService = new ClientService();
@@ -80,5 +86,9 @@ public class ClientManagementController {
         alert.setHeaderText("Une erreur est survenue");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    @Override
+    public void update() {
+        refreshTable();
     }
 }
