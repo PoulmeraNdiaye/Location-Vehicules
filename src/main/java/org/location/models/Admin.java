@@ -1,6 +1,7 @@
 package org.location.models;
 
-import  javax.persistence.*;
+//import  javax.persistence.*;
+import jakarta.persistence.*;
 @Entity
 //@DiscriminatorValue("ADMIN")
 @Table(name = "admins")

@@ -1,8 +1,8 @@
 package org.location.models;
 
-import  javax.persistence.*;
+//import  javax.persistence.*;
 import java.util.Objects;
-
+import jakarta.persistence.*;
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 //@DiscriminatorColumn(name = "role", discriminatorType = DiscriminatorType.STRING)

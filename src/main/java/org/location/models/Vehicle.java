@@ -1,7 +1,7 @@
 package org.location.models;
 
-import  javax.persistence.*;
-
+//import  javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "vehicules")
