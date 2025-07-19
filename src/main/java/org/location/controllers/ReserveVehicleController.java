@@ -14,6 +14,7 @@ import java.time.temporal.ChronoUnit;
 
 public class ReserveVehicleController {
     private static final Logger logger = LoggerFactory.getLogger(ReserveVehicleController.class);
+    private static final double CHAUFFEUR_FEE = 1500.0;
 
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
@@ -93,6 +94,9 @@ public class ReserveVehicleController {
 
             long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
             double montantFacture = selectedVehicle.getTarif() * numberOfDays;
+            if (avecChauffeur) {
+                montantFacture += CHAUFFEUR_FEE;
+            }
 
             reservationService.createReservation(SessionManager.getCurrentUser(),
                     selectedVehicle, startDate, endDate, avecChauffeur);
@@ -100,8 +104,9 @@ public class ReserveVehicleController {
             String vehicleName = selectedVehicle.getMarque() + " " + selectedVehicle.getModele();
             String userName = SessionManager.getCurrentUser().getNom();
             String message = String.format(
-                    "La réservation du véhicule %s par %s pour une durée de %d jour(s) s'élève à %.2f € et a bien été enregistrée avec succès.",
-                    vehicleName, userName, numberOfDays, montantFacture);
+                    "La réservation du véhicule %s par %s pour une durée de %d jour(s) s'élève à %.2f €%s et a bien été enregistrée avec succès.",
+                    vehicleName, userName, numberOfDays, montantFacture,
+                    avecChauffeur ? " (inclut 1500 € pour le chauffeur)" : "");
 
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Confirmation de Réservation");
