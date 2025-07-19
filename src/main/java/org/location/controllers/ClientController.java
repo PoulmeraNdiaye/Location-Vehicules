@@ -20,6 +20,7 @@ import org.location.utils.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -53,19 +54,27 @@ public class ClientController {
         tarifColumn.setCellValueFactory(new PropertyValueFactory<>("tarif"));
         immatriculationColumn.setCellValueFactory(new PropertyValueFactory<>("immatriculation"));
         dispoColumn.setCellValueFactory(cellData -> {
-            boolean dispo = Boolean.TRUE.equals(cellData.getValue().getDisponible());
-            return new ReadOnlyStringWrapper(dispo ? "Disponible" : "Indisponible");
+            Vehicle vehicle = cellData.getValue();
+            boolean isAvailable = vehicle.getDisponible() || reservationService.isVehicleAvailableNow(vehicle);
+            return new ReadOnlyStringWrapper(isAvailable ? "Disponible" : "Indisponible");
         });
 
-        vehicleTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        idColumn.setPrefWidth(100);
+        marqueColumn.setPrefWidth(150);
+        modeleColumn.setPrefWidth(150);
+        tarifColumn.setPrefWidth(100);
+        immatriculationColumn.setPrefWidth(150);
+        dispoColumn.setPrefWidth(100);
+
+        vehicleTable.setColumnResizePolicy(TableView.UNCONSTRAINED_RESIZE_POLICY);
 
         refreshTable();
 
         marqueField.textProperty().addListener((obs, oldText, newText) -> handleSearchVehicles());
         modeleField.textProperty().addListener((obs, oldText, newText) -> handleSearchVehicles());
         prixMaxField.textProperty().addListener((obs, oldText, newText) -> handleSearchVehicles());
+        logger.info("ClientController initialisé");
     }
-
 
     public void setCurrentUser(User user) {
         this.currentUser = user;
@@ -76,22 +85,22 @@ public class ClientController {
             Client client = user.getClient();
             if (client != null) {
                 pointsLabel.setText(client.getPointsFidelite() + " pts");
+                statusLabel.setText("Connecté : " + user.getNom());
                 logger.info("Points de fidélité mis à jour : {} pts", client.getPointsFidelite());
             } else {
                 pointsLabel.setText("0 pts");
+                statusLabel.setText("Connecté : " + user.getNom() + " (Compte client non configuré)");
                 logger.warn("Aucun client associé à l'utilisateur : {}", user.getLogin());
-                showError("Aucun client associé à cet utilisateur.");
+                showError("Compte client non configuré. Contactez l'administrateur.");
             }
-            statusLabel.setText("Connecté : " + user.getNom());
         } else {
             clientNameLabel.setText("Client");
             pointsLabel.setText("0 pts");
-            statusLabel.setText("Connecté");
+            statusLabel.setText("Non connecté");
             logger.warn("Aucun utilisateur fourni pour l'initialisation du ClientController");
             showError("Utilisateur non connecté.");
         }
     }
-
 
     @FXML
     private void handleSearchVehicles() {
@@ -100,7 +109,7 @@ public class ClientController {
         String prixMax = prixMaxField.getText().trim();
 
         try {
-            List<Vehicle> filteredVehicles = vehicleList != null ? vehicleList : vehicleService.getAvailableVehicles();
+            List<Vehicle> filteredVehicles = vehicleList != null ? vehicleList : vehicleService.getAllVehicles();
 
             if (!marque.isEmpty()) {
                 filteredVehicles = filteredVehicles.stream()
@@ -137,19 +146,18 @@ public class ClientController {
         }
     }
 
-
     @FXML
     private void handleNewReservation() {
+        if (currentUser == null || currentUser.getClient() == null) {
+            showError("Compte client non configuré. Contactez l'administrateur.");
+            logger.warn("Tentative de réservation sans client associé");
+            return;
+        }
+
         Vehicle selectedVehicle = vehicleTable.getSelectionModel().getSelectedItem();
         if (selectedVehicle == null) {
             showError("Veuillez sélectionner un véhicule à réserver.");
             logger.warn("Tentative de réservation sans véhicule sélectionné");
-            return;
-        }
-
-        if (!selectedVehicle.getDisponible()) {
-            showError("Ce véhicule n'est pas disponible pour la réservation.");
-            logger.warn("Tentative de réservation d'un véhicule indisponible : {}", selectedVehicle.getId());
             return;
         }
 
@@ -158,19 +166,20 @@ public class ClientController {
             Scene scene = new Scene(loader.load());
             scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
-
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Réserver un Véhicule");
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner(vehicleTable.getScene().getWindow());
             dialogStage.setScene(scene);
 
-            // Passe le véhicule sélectionné au contrôleur de réservation
-           // ReserveVehicleController controller = loader.getController();
-           // controller.setVehicle(selectedVehicle);
+            ReserveVehicleController controller = loader.getController();
+            controller.setVehicle(selectedVehicle);
 
             dialogStage.showAndWait();
+
             refreshTable();
+            setCurrentUser(SessionManager.getCurrentUser());
+
             statusLabel.setText("Nouvelle réservation effectuée");
             logger.info("Fenêtre de réservation ouverte pour le véhicule {}", selectedVehicle.getId());
         } catch (Exception e) {
@@ -179,14 +188,21 @@ public class ClientController {
         }
     }
 
-
     @FXML
     private void handleViewReservations() {
+        if (currentUser == null || currentUser.getClient() == null) {
+            showError("Compte client non configuré. Contactez l'administrateur.");
+            logger.warn("Tentative d'affichage des réservations sans client associé");
+            return;
+        }
+
         try {
-            // Charge l'interface des réservations (client-reservations.fxml)
             FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/fxml/client-reservations.fxml"));
             Scene scene = new Scene(loader.load());
             scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
+
+            ClientReservationsController controller = loader.getController();
+            controller.setCurrentUser(SessionManager.getCurrentUser());
 
             Stage stage = (Stage) vehicleTable.getScene().getWindow();
             stage.setScene(scene);
@@ -194,14 +210,12 @@ public class ClientController {
             stage.setMaximized(false);
             stage.centerOnScreen();
 
-            statusLabel.setText("Affichage des réservations");
             logger.info("Navigation vers l'écran des réservations");
         } catch (Exception e) {
             showError("Erreur lors de l'ouverture de l'historique des réservations : " + e.getMessage());
             logger.error("Erreur lors de l'ouverture de l'historique des réservations : {}", e.getMessage(), e);
         }
     }
-
 
     @FXML
     private void handleLogout() {
@@ -225,24 +239,23 @@ public class ClientController {
         }
     }
 
-
     @FXML
     private void handleExit() {
         logger.info("Fermeture de l'application");
         System.exit(0);
     }
 
-
     private void refreshTable() {
         try {
-            List<Vehicle> vehiclesList = vehicleService.getAvailableVehicles();
+            List<Vehicle> vehiclesList = vehicleService.getAllVehicles();
             vehicleList = FXCollections.observableArrayList(vehiclesList);
             vehicleTable.setItems(vehicleList);
-            statusLabel.setText("Tableau mis à jour : " + vehicleList.size() + " véhicules disponibles");
+            statusLabel.setText("Tableau mis à jour : " + vehicleList.size() + " véhicules");
             logger.info("Tableau des véhicules rafraîchi avec {} véhicules", vehicleList.size());
         } catch (Exception e) {
             showError("Erreur lors du chargement des véhicules : " + e.getMessage());
             logger.error("Erreur lors du chargement des véhicules : {}", e.getMessage(), e);
+            vehicleTable.setItems(FXCollections.observableArrayList());
         }
     }
 

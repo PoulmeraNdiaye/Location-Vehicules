@@ -19,7 +19,19 @@ public class UserService {
             query.setParameter("login", login);
             User user = query.uniqueResult();
             if (user != null && motDePasse.equals(user.getMotDePasse())) {
-                logger.info("Authentification réussie pour : {}", login);
+                logger.info("Authentification réussie pour : {} (Rôle : {})", login, user.getRole());
+                // Fetch Client for CLIENT role
+                if (user.getRole() == User.Role.CLIENT) {
+                    Client client = session.createQuery("FROM Client WHERE email = :email", Client.class)
+                            .setParameter("email", login)
+                            .uniqueResult();
+                    if (client != null) {
+                        user.setClient(client);
+                        logger.info("Client associé à l'utilisateur : {} (Client ID: {})", login, client.getId());
+                    } else {
+                        logger.warn("Aucun client trouvé pour l'utilisateur : {}", login);
+                    }
+                }
                 return user;
             } else {
                 logger.warn("Échec de l'authentification pour : {}", login);
@@ -32,13 +44,20 @@ public class UserService {
     }
 
     public void insertUser(String nom, String login, String motDePasse, User.Role role) {
-        User user = new User(nom, login, motDePasse, role);
         Transaction transaction = null;
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
             transaction = session.beginTransaction();
+            Client client = null;
+            if (role == User.Role.CLIENT) {
+                // Create a Client record for CLIENT role
+                client = new Client(nom, login);
+                session.save(client);
+                logger.info("Client inséré pour l'utilisateur : {} (Client ID: {})", login, client.getId());
+            }
+            User user = new User(nom, login, motDePasse, role, client);
             session.save(user);
             transaction.commit();
-            logger.info("Utilisateur inséré avec succès : {}", login);
+            logger.info("Utilisateur inséré avec succès : {} (Rôle : {})", login, role);
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
@@ -64,6 +83,4 @@ public class UserService {
             throw e;
         }
     }
-
-
 }
