@@ -18,6 +18,7 @@ import java.util.List;
 public class ReservationService {
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
     private static final int POINTS_PER_RESERVATION = 10;
+    private static final double CHAUFFEUR_FEE = 1500.0; // Constant for chauffeur fee
 
     public void createReservation(User user, Vehicle vehicle, LocalDate startDate, LocalDate endDate, boolean avecChauffeur) {
         Transaction transaction = null;
@@ -34,6 +35,9 @@ public class ReservationService {
             }
 
             double montantFacture = vehicle.getTarif() * numberOfDays;
+            if (avecChauffeur) {
+                montantFacture += CHAUFFEUR_FEE; // Add 1500 for chauffeur
+            }
 
             Reservation reservation = new Reservation();
             reservation.setClient(client);
@@ -52,8 +56,8 @@ public class ReservationService {
             SessionManager.setCurrentUser(user);
 
             transaction.commit();
-            logger.info("Réservation créée pour le client {} et le véhicule {} du {} au {}. Montant facturé : {}, Points de fidélité : {}",
-                    client.getId(), vehicle.getId(), startDate, endDate, montantFacture, client.getPointsFidelite());
+            logger.info("Réservation créée pour le client {} et le véhicule {} du {} au {}. Montant facturé : {} (avec chauffeur : {}), Points de fidélité : {}",
+                    client.getId(), vehicle.getId(), startDate, endDate, montantFacture, avecChauffeur, client.getPointsFidelite());
         } catch (Exception e) {
             if (transaction != null) {
                 transaction.rollback();
