@@ -6,7 +6,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 import org.location.MainApplication;
+import org.location.models.Client;
 import org.location.models.User;
+import org.location.services.ReservationService;
 import org.location.utils.UserService;
 import org.location.utils.SessionManager;
 import org.slf4j.Logger;
@@ -22,10 +24,12 @@ public class LoginController {
     @FXML private Button registerButton;
 
     private UserService userService;
+    private ReservationService reservationService;
 
     @FXML
     public void initialize() {
         userService = new UserService();
+        reservationService = new ReservationService();
 
         loginField.textProperty().addListener((obs, oldText, newText) -> errorLabel.setVisible(false));
         passwordField.textProperty().addListener((obs, oldText, newText) -> errorLabel.setVisible(false));
@@ -58,6 +62,11 @@ public class LoginController {
                         showError("Interface employé non disponible pour le moment");
                         break;
                     case CLIENT:
+                        if (user.getClient() == null) {
+                            logger.warn("Aucun client associé à l'utilisateur : {}", login);
+                            showError("Aucun compte client associé. Veuillez vous inscrire.");
+                            return;
+                        }
                         switchToClientInterface(user);
                         break;
                 }
@@ -79,7 +88,7 @@ public class LoginController {
             if (loader.getLocation() == null) {
                 throw new IllegalStateException("Le fichier /fxml/register-client.fxml n'a pas été trouvé");
             }
-            Scene scene = new Scene(loader.load());
+            Scene scene = new Scene(loader.load(), 600, 400); // Smaller size for registration
             scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
             Stage stage = (Stage) registerButton.getScene().getWindow();
@@ -101,7 +110,7 @@ public class LoginController {
             if (loader.getLocation() == null) {
                 throw new IllegalStateException("Le fichier /fxml/main-admin.fxml n'a pas été trouvé");
             }
-            Scene scene = new Scene(loader.load(), 800, 600);
+            Scene scene = new Scene(loader.load(), 1200, 800); // Larger size for admin interface
             scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
             Stage stage = (Stage) loginButton.getScene().getWindow();
@@ -123,7 +132,7 @@ public class LoginController {
             if (loader.getLocation() == null) {
                 throw new IllegalStateException("Le fichier /fxml/main-client.fxml n'a pas été trouvé");
             }
-            Scene scene = new Scene(loader.load(), 800, 600);
+            Scene scene = new Scene(loader.load(), 1200, 800); // Larger size for client interface
             scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
             ClientController clientController = loader.getController();
@@ -143,6 +152,8 @@ public class LoginController {
 
     private void showError(String message) {
         errorLabel.setText(message);
+        errorLabel.setStyle("-fx-text-fill: red;");
         errorLabel.setVisible(true);
+        logger.warn("Erreur affichée : {}", message);
     }
 }

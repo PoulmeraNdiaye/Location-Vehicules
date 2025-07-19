@@ -2,81 +2,129 @@ package org.location.services;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.query.Query;
 import org.location.factory.HibernateFactory;
 import org.location.models.Client;
 import org.location.models.Reservation;
 import org.location.models.User;
 import org.location.models.Vehicle;
+import org.location.utils.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 public class ReservationService {
     private static final Logger logger = LoggerFactory.getLogger(ReservationService.class);
-    private static final int POINTS_PER_RESERVATION = 10; // Exemple : 10 points par réservation
+    private static final int POINTS_PER_RESERVATION = 10;
 
-    public void createReservation(User user, Vehicle vehicle, LocalDate dateDebut, LocalDate dateFin, boolean avecChauffeur) {
+    public void createReservation(User user, Vehicle vehicle, LocalDate startDate, LocalDate endDate, boolean avecChauffeur) {
+        Transaction transaction = null;
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            Transaction tx = session.beginTransaction();
-            Client client = session.createQuery("FROM Client WHERE email = :email", Client.class)
-                    .setParameter("email", user.getLogin())
-                    .uniqueResult();
+            transaction = session.beginTransaction();
+            Client client = user.getClient();
             if (client == null) {
                 throw new IllegalStateException("Client non trouvé pour l'utilisateur : " + user.getLogin());
             }
 
-            if (!isVehicleAvailable(vehicle, dateDebut, dateFin)) {
-                throw new IllegalStateException("Le véhicule n'est pas disponible pour les dates sélectionnées.");
+            long numberOfDays = ChronoUnit.DAYS.between(startDate, endDate);
+            if (numberOfDays <= 0) {
+                throw new IllegalArgumentException("La durée de la réservation doit être d'au moins un jour.");
             }
 
-            Reservation reservation = new Reservation(client, vehicle, dateDebut, dateFin, "EN_ATTENTE", avecChauffeur);
-            vehicle.setDisponible(false); 
-            client.setPointsFidelite(client.getPointsFidelite() + POINTS_PER_RESERVATION);
+            double montantFacture = vehicle.getTarif() * numberOfDays;
+
+            Reservation reservation = new Reservation();
+            reservation.setClient(client);
+            reservation.setVehicle(vehicle);
+            reservation.setStartDate(startDate);
+            reservation.setEndDate(endDate);
+            reservation.setAvecChauffeur(avecChauffeur);
+            reservation.setStatut("EN_ATTENTE");
+            reservation.setMontantFacture(montantFacture);
+
             session.save(reservation);
-            session.update(vehicle);
+
+            client.setPointsFidelite(client.getPointsFidelite() + POINTS_PER_RESERVATION);
             session.update(client);
-            tx.commit();
-            logger.info("Réservation créée pour le client {} et le véhicule {} du {} au {}. Points de fidélité mis à jour : {}",
-                    client.getId(), vehicle.getId(), dateDebut, dateFin, client.getPointsFidelite());
+            user.setClient(client);
+            SessionManager.setCurrentUser(user);
+
+            transaction.commit();
+            logger.info("Réservation créée pour le client {} et le véhicule {} du {} au {}. Montant facturé : {}, Points de fidélité : {}",
+                    client.getId(), vehicle.getId(), startDate, endDate, montantFacture, client.getPointsFidelite());
         } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
             logger.error("Erreur lors de la création de la réservation : {}", e.getMessage(), e);
-            throw new RuntimeException("Erreur lors de la création de la réservation", e);
+            throw e;
         }
     }
 
-    public List<Reservation> getReservationsByClient(Client client) {
+    public List<Reservation> getUserReservations(User user) {
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            logger.info("Récupération des réservations pour le client : {}", client.getId());
-            Query<Reservation> query = session.createQuery("FROM Reservation WHERE client = :client", Reservation.class);
-            query.setParameter("client", client);
-            List<Reservation> reservations = query.getResultList();
-            logger.info("Nombre de réservations récupérées : {}", reservations.size());
+            Client client = user.getClient();
+            if (client == null) {
+                throw new IllegalStateException("Client non trouvé pour l'utilisateur : " + user.getLogin());
+            }
+            logger.debug("Exécution de la requête pour récupérer les réservations du client ID: {}", client.getId());
+            List<Reservation> reservations = session.createQuery(
+                            "FROM Reservation r JOIN FETCH r.vehicle WHERE r.client.id = :clientId", Reservation.class)
+                    .setParameter("clientId", client.getId())
+                    .list();
+            logger.debug("Nombre de réservations trouvées : {}", reservations.size());
             return reservations;
         } catch (Exception e) {
-            logger.error("Erreur lors de la récupération des réservations : {}", e.getMessage(), e);
-            throw new RuntimeException("Erreur lors de la récupération des réservations", e);
+            logger.error("Erreur lors de la récupération des réservations pour l'utilisateur : {}", user.getLogin(), e);
+            throw e;
+        }
+    }
+
+    public Client getClientByEmail(String email) {
+        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
+            return session.createQuery("FROM Client WHERE email = :email", Client.class)
+                    .setParameter("email", email)
+                    .uniqueResult();
+        } catch (Exception e) {
+            logger.error("Erreur lors de la récupération du client pour l'email : {}", email, e);
+            throw e;
         }
     }
 
     public boolean isVehicleAvailable(Vehicle vehicle, LocalDate startDate, LocalDate endDate) {
         try (Session session = HibernateFactory.getSessionFactory().openSession()) {
-            Query<Reservation> query = session.createQuery(
-                    "FROM Reservation WHERE vehicle = :vehicle AND " +
-                            "(dateDebut <= :endDate AND dateFin >= :startDate)", Reservation.class);
-            query.setParameter("vehicle", vehicle);
-            query.setParameter("startDate", startDate);
-            query.setParameter("endDate", endDate);
-            List<Reservation> conflictingReservations = query.getResultList();
-            boolean isAvailable = conflictingReservations.isEmpty();
-            logger.info("Vérification de disponibilité pour le véhicule {} du {} au {} : {}",
-                    vehicle.getId(), startDate, endDate, isAvailable ? "disponible" : "indisponible");
-            return isAvailable;
+            logger.debug("Vérification de la disponibilité du véhicule {} pour {} à {}", vehicle.getId(), startDate, endDate);
+            List<Reservation> conflictingReservations = session.createQuery(
+                            "FROM Reservation WHERE vehicle.id = :vehicleId " +
+                                    "AND (startDate <= :endDate AND endDate >= :startDate)", Reservation.class)
+                    .setParameter("vehicleId", vehicle.getId())
+                    .setParameter("startDate", startDate)
+                    .setParameter("endDate", endDate)
+                    .list();
+            logger.debug("Conflits trouvés : {}", conflictingReservations.size());
+            return conflictingReservations.isEmpty();
         } catch (Exception e) {
-            logger.error("Erreur lors de la vérification de disponibilité : {}", e.getMessage(), e);
-            throw new RuntimeException("Erreur lors de la vérification de disponibilité", e);
+            logger.error("Erreur lors de la vérification de la disponibilité du véhicule : {}", vehicle.getId(), e);
+            throw e;
+        }
+    }
+
+    public boolean isVehicleAvailableNow(Vehicle vehicle) {
+        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
+            LocalDate today = LocalDate.now();
+            logger.debug("Vérification si le véhicule {} est disponible aujourd'hui ({})", vehicle.getId(), today);
+            List<Reservation> activeReservations = session.createQuery(
+                            "FROM Reservation WHERE vehicle.id = :vehicleId AND endDate >= :today", Reservation.class)
+                    .setParameter("vehicleId", vehicle.getId())
+                    .setParameter("today", today)
+                    .list();
+            logger.debug("Réservations actives pour le véhicule {} : {}", vehicle.getId(), activeReservations.size());
+            return activeReservations.isEmpty();
+        } catch (Exception e) {
+            logger.error("Erreur lors de la vérification de la disponibilité actuelle du véhicule : {}", vehicle.getId(), e);
+            throw e;
         }
     }
 }
