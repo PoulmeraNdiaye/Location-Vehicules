@@ -16,7 +16,10 @@ public class ConcreteFactory {
             return factoryClass.cast(appFactory.getVehicleFactory());
         } else if (factoryClass == ReservationFactory.class) {
             return factoryClass.cast(appFactory.getReservationFactory());
+        }else if (factoryClass == FactureFactory.class) {
+            return factoryClass.cast(appFactory.getFactureFactory());
         }
+
 
         return null;
     }

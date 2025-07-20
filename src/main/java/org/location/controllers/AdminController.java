@@ -7,10 +7,13 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
+import org.location.exception.DAOException;
+import org.location.models.Reservation;
 import org.location.observer.DataNotifier;
 import org.location.observer.NotifierSingleton;
 import org.location.observer.Observer;
 import org.location.services.ClientService;
+import org.location.services.ReservationService;
 import org.location.services.VehicleService;
 import org.location.utils.SessionManager;
 
@@ -27,15 +30,17 @@ public class AdminController implements Observer {
 
     private VehicleService vehicleService;
     private ClientService clientService;
-    // private ReservationService reservationService;
+    private ReservationService reservationService;
     private final DataNotifier notifier = NotifierSingleton.getInstance();
+    @FXML private TableView<Reservation> reservationTable;
+    @FXML private Label adminMessage;
 
     public void initialize() {
         notifier.attach(this);
 
         vehicleService = new VehicleService();
         clientService = new ClientService();
-        // reservationService = new ReservationService();
+        reservationService = new ReservationService();
 
         if (SessionManager.getCurrentUser() != null) {
             userLabel.setText("Utilisateur: " + SessionManager.getCurrentUser().getNom());
@@ -158,7 +163,7 @@ public class AdminController implements Observer {
             }
 
             FXMLLoader loader = new FXMLLoader(
-                    MainApplication.class.getResource("/fxml/reservation-management.fxml")
+                    MainApplication.class.getResource("/fxml/ReservationManagement.fxml")
             );
             Tab reservationTab = new Tab("Réservations");
             reservationTab.setContent(loader.load());

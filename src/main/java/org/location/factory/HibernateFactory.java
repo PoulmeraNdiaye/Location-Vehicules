@@ -29,6 +29,7 @@ public class HibernateFactory {
                 sources.addAnnotatedClass(Admin.class);
                 sources.addAnnotatedClass(Chauffeur.class);
                 sources.addAnnotatedClass(Reservation.class);
+                sources.addAnnotatedClass(Facture.class);
 
 
                 Metadata meta = sources.getMetadataBuilder().build();

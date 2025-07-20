@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="10" xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="org.location.controllers.ReservationManagementController">
+    <padding>
+        <Insets top="10" right="10" bottom="10" left="10" />
+    </padding>
+
+    <children>
+        <Label text="Gestion des Réservations">
+            <font>
+                <Font name="System Bold" size="18" />
+            </font>
+        </Label>
+
+        <TableView fx:id="reservationTable">
+            <columns>
+                <TableColumn fx:id="clientCol" text="Client" prefWidth="150"/>
+                <TableColumn fx:id="vehicleCol" text="Véhicule" prefWidth="150"/>
+                <TableColumn fx:id="datesCol" text="Dates" prefWidth="200"/>
+                <TableColumn fx:id="chauffeurCol" text="Chauffeur" prefWidth="100"/>
+                <TableColumn fx:id="statutCol" text="Statut" prefWidth="100"/>
+            </columns>
+        </TableView>
+
+        <HBox spacing="10" alignment="CENTER">
+            <Button fx:id="btnValider" text="Valider" onAction="#handleValider"/>
+            <Button fx:id="btnRejeter" text="Rejeter" onAction="#handleRejeter"/>
+        </HBox>
+
+        <Label fx:id="adminMessage" textFill="green"/>
+    </children>
+</VBox>

@@ -24,12 +24,10 @@
                 <TableColumn fx:id="tarifColumn" text="Tarif (€)"/>
                 <TableColumn fx:id="immatriculationColumn" text="Immatriculation"/>
                 <TableColumn fx:id="disponibleColumn" text="Disponibilité" />
-
             </columns>
         </TableView>
 
         <HBox spacing="10" alignment="CENTER">
-            <Button text="Rafraîchir" onAction="#refreshTable"/>
             <Button text="Ajouter Véhicule" onAction="#handleAddVehicle"/>
             <Button onAction="#onEditVehicle" text="Modifier" />
             <Button text="Supprimer" onAction="#onDeleteVehicle" />

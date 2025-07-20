@@ -7,4 +7,6 @@ public abstract class AbstractAppFactory {
     public abstract ChauffeurFactory getChauffeurFactory();
     public abstract VehicleFactory getVehicleFactory();
     public abstract ReservationFactory getReservationFactory();
+
+    public abstract FactureFactory getFactureFactory();
 }

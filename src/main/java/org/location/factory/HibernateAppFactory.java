@@ -54,19 +54,17 @@ public class HibernateAppFactory extends AbstractAppFactory {
 
     @Override
     public ReservationFactory getReservationFactory() {
-        /*
+
         return new ReservationFactory() {
             @Override
             public IDao<Reservation> getReservationDao(Class<? extends IDao<Reservation>> daoClass) {
-                if (daoClass == ReservationDaoImpl.class) {
-                    return new ReservationDaoImpl();
+                if (daoClass == ReservationDAOImpl.class) {
+                    return new ReservationDAOImpl();
                 }
                 return null;
             }
         };
 
-         */
-        return null;
     }
 
 
@@ -83,5 +81,19 @@ public class HibernateAppFactory extends AbstractAppFactory {
             }
         };
     }
+
+    @Override
+    public FactureFactory getFactureFactory() {
+        return new FactureFactory() {
+            @Override
+            public IDao<Facture> getFactureDao(Class<? extends IDao<Facture>> daoClass) {
+                if (daoClass == FactureDAOImpl.class) {
+                    return new FactureDAOImpl();
+                }
+                return null;
+            }
+        };
+    }
+
 
 }

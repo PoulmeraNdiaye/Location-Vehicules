@@ -4,9 +4,11 @@ import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.location.MainApplication;
 import org.location.models.Client;
@@ -17,6 +19,7 @@ import org.location.utils.SessionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
@@ -73,7 +76,49 @@ public class ClientReservationsController {
             showError("Erreur lors du chargement des réservations : " + e.getMessage());
             logger.error("Erreur lors du chargement des réservations : {}", e.getMessage(), e);
         }
+
+
+        reservationTable.setRowFactory(tv -> {
+            TableRow<Reservation> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (!row.isEmpty() && event.getClickCount() == 2) {
+                    Reservation selected = row.getItem();
+                    afficherFacture(selected);
+                }
+            });
+            return row;
+        });
     }
+
+
+    private void afficherFacture(Reservation reservation) {
+        if (reservation == null) {
+            showError("Aucune réservation sélectionnée.");
+            return;
+        }
+
+        try {
+            FXMLLoader loader = new FXMLLoader(MainApplication.class.getResource("/fxml/invoice.fxml"));
+            Parent root = loader.load(); // <-- possible erreur ici
+
+            InvoiceController controller = loader.getController();
+            controller.setReservation(reservation); // <-- possible erreur ici
+
+            Stage stage = new Stage();
+            stage.setTitle("Facture");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.show();
+
+        } catch (IOException e) {
+            logger.error("Erreur IO lors du chargement de la facture : {}", e.getMessage(), e);
+            showError("Erreur IO : " + e.getMessage());
+        } catch (Exception e) {
+            logger.error("Erreur inattendue lors de l'affichage de la facture : {}", e.getMessage(), e);
+            showError("Erreur : " + e.getMessage());
+        }
+    }
+
 
     @FXML
     private void handleBack() {
@@ -95,6 +140,24 @@ public class ClientReservationsController {
         } catch (Exception e) {
             showError("Erreur lors du retour à l'espace client : " + e.getMessage());
             logger.error("Erreur lors du retour à l'espace client : {}", e.getMessage(), e);
+        }
+    }
+    private void showInvoice(Reservation reservation) {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/invoice.fxml"));
+            Parent root = loader.load();
+
+            InvoiceController controller = loader.getController();
+            controller.setReservation(reservation);
+
+            Stage stage = new Stage();
+            stage.setTitle("Facture");
+            stage.setScene(new Scene(root));
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

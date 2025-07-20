@@ -54,4 +54,9 @@ public class ClientService {
     public long countTotalClients() throws DAOException {
         return clientDAO.list().size();
     }
+
+    public void updateClient(Client client) throws DAOException {
+        clientDAO.update(client);
+
+    }
 }

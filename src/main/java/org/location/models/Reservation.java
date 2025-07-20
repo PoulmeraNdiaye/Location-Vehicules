@@ -30,6 +30,7 @@ public class Reservation {
 
     @Column(name = "avec_chauffeur", nullable = false)
     private Boolean avecChauffeur = false;
+    private Double coutTotal;
 
     // Constructeurs
     public Reservation() {
@@ -120,6 +121,14 @@ public class Reservation {
     public int hashCode() {
         return Objects.hash(id);
     }
+    public Double getCoutTotal() {
+        return coutTotal;
+    }
+
+    public void setCoutTotal(Double coutTotal) {
+        this.coutTotal = coutTotal;
+    }
+
 
     @Override
     public String toString() {

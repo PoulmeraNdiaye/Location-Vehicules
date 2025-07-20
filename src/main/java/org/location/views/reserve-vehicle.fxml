@@ -36,11 +36,13 @@
         <CheckBox fx:id="chauffeurCheckBox" text="Avec chauffeur" GridPane.rowIndex="3" GridPane.columnIndex="0"
                   GridPane.columnSpan="2"/>
     </GridPane>
+    <Label fx:id="estimationLabel" layoutX="50" layoutY="280" text="" style="-fx-font-weight: bold; -fx-text-fill: blue;" />
 
     <Label fx:id="errorLabel" text="" visible="false" style="-fx-text-fill: red;"/>
 
     <HBox spacing="10" alignment="CENTER">
         <Button text="Confirmer" onAction="#handleConfirmReservation"/>
+        <Button fx:id="btnEstimer" text="Estimer" onAction="#handleEstimate" />
         <Button text="Annuler" onAction="#handleCancel"/>
     </HBox>
 </VBox>

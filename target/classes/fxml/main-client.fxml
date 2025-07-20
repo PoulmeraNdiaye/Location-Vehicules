@@ -83,8 +83,8 @@
                     </children>
                 </HBox>
 
-                <!-- Recherche de véhicules -->
-                <VBox alignment="CENTER" spacing="15.0" style="-fx-border-color: #007bff; -fx-border-radius: 5;">
+                <!-- Recherche de véhicules (nouvelle version alignée horizontalement) -->
+                <VBox alignment="CENTER" spacing="15.0" style="-fx-border-color: #007bff; -fx-border-radius: 5; -fx-background-color: #f8f9fa;">
                     <padding>
                         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
                     </padding>
@@ -94,23 +94,30 @@
                                 <Font size="18.0" />
                             </font>
                         </Label>
-                        <GridPane alignment="CENTER" hgap="10.0" vgap="10.0">
+                        <HBox spacing="20.0" alignment="CENTER">
                             <children>
-                                <Label text="Marque :" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                                <TextField fx:id="marqueField" promptText="Ex: Toyota" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-
-                                <Label text="Modèle :" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-                                <TextField fx:id="modeleField" promptText="Ex: Corolla" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-
-                                <Label text="Prix Max (€) :" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-                                <TextField fx:id="prixMaxField" promptText="Ex: 100" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                                <VBox spacing="5.0">
+                                    <Label text="Marque :" />
+                                    <TextField fx:id="marqueField" promptText="Ex: Toyota" />
+                                </VBox>
+                                <VBox spacing="5.0">
+                                    <Label text="Modèle :" />
+                                    <TextField fx:id="modeleField" promptText="Ex: Corolla" />
+                                </VBox>
+                                <VBox spacing="5.0">
+                                    <Label text="Prix Max (€) :" />
+                                    <TextField fx:id="prixMaxField" promptText="Ex: 100" />
+                                </VBox>
+                                <VBox alignment="BOTTOM_CENTER">
+                                    <Button mnemonicParsing="false" onAction="#handleSearchVehicles" text="Rechercher" />
+                                </VBox>
                             </children>
-                        </GridPane>
-                        <Button mnemonicParsing="false" onAction="#handleSearchVehicles" text="Rechercher" />
+                        </HBox>
                     </children>
                 </VBox>
 
-                <TableView fx:id="vehicleTable" prefHeight="200.0" prefWidth="600.0">
+                <!-- Tableau des véhicules (agrandi) -->
+                <TableView fx:id="vehicleTable" prefHeight="300.0" prefWidth="800.0">
                     <columns>
                         <TableColumn fx:id="idColumn" text="ID" prefWidth="75.0" />
                         <TableColumn fx:id="marqueColumn" text="Marque" prefWidth="150.0" />

@@ -153,13 +153,15 @@ public class ClientController {
             Scene scene = new Scene(loader.load());
             scene.getStylesheets().add(MainApplication.class.getResource("/css/styles.css").toExternalForm());
 
+            ReserveVehicleController controller = loader.getController();
+            controller.setClient((Client) currentUser);
+            controller.setVehicle(selectedVehicle);
+
             Stage dialogStage = new Stage();
             dialogStage.setTitle("Réserver un Véhicule");
             dialogStage.initModality(Modality.APPLICATION_MODAL);
             dialogStage.initOwner(vehicleTable.getScene().getWindow());
             dialogStage.setScene(scene);
-
-            // Optionnel : passer selectedVehicle au contrôleur ici
 
             dialogStage.showAndWait();
             refreshTable();
@@ -167,8 +169,10 @@ public class ClientController {
 
         } catch (Exception e) {
             showError("Erreur ouverture fenêtre réservation : " + e.getMessage());
+            e.printStackTrace();
         }
     }
+
 
     @FXML
     private void handleViewReservations() {
