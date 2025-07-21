@@ -1,11 +1,13 @@
 package org.location.dao.impl;
 
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.location.dao.ReservationDAO;
 import org.location.factory.HibernateFactory;
 import org.location.models.Reservation;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,4 +104,32 @@ public class ReservationDAOImpl extends ObjectDAOImpl<Reservation> implements Re
         }
     }
 
+    public long countByStatus(String status) {
+        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
+            String hql = "SELECT COUNT(r) FROM Reservation r WHERE r.statut = :status";
+            Query<Long> query = session.createQuery(hql, Long.class);
+            query.setParameter("status", status);
+            return query.uniqueResult();
+        }
+    }
+
+    public double calculateMonthlyRevenue() {
+        try (Session session = HibernateFactory.getSessionFactory().openSession()) {
+            YearMonth currentMonth = YearMonth.now();
+            LocalDate startOfMonth = currentMonth.atDay(1);
+            LocalDate endOfMonth = currentMonth.atEndOfMonth();
+
+            String hql = "SELECT SUM(r.coutTotal) FROM Reservation r " +
+                    "WHERE r.statut = 'VALIDEE' AND r.dateDebut BETWEEN :start AND :end";
+
+            Query<Double> query = session.createQuery(hql, Double.class);
+            query.setParameter("start", startOfMonth);
+            query.setParameter("end", endOfMonth);
+
+            Double result = query.uniqueResult();
+            return result != null ? result : 0.0;
+        }
+    }
+
 }
+

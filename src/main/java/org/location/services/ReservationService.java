@@ -162,4 +162,11 @@ public class ReservationService {
         return reservationDAO.findAll();
     }
 
+    public long countActiveReservations() {
+        return reservationDAO.countByStatus("VALIDEE");
+    }
+
+    public double getMonthlyRevenue() {
+        return reservationDAO.calculateMonthlyRevenue();
+    }
 }

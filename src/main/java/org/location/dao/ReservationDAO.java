@@ -19,4 +19,8 @@ public interface ReservationDAO extends IDao<Reservation> {
     );
 
     List<Reservation> findAll();
+
+    long countByStatus(String validee);
+
+    double calculateMonthlyRevenue();
 }

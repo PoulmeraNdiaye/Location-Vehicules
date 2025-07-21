@@ -54,14 +54,14 @@ public class AdminController implements Observer {
 
             long availableVehicles = vehicleService.countAvailableVehicles();
             long totalClients = clientService.countTotalClients();
-            // long activeReservations = reservationService.countActiveReservations();
-            // double monthlyRevenue = reservationService.getMonthlyRevenue();
+            long activeReservations = reservationService.countActiveReservations();
+            double monthlyRevenue = reservationService.getMonthlyRevenue();
 
 
             availableVehiclesLabel.setText(String.valueOf(availableVehicles));
             totalClientsLabel.setText(String.valueOf(totalClients));
-            // activeReservationsLabel.setText(String.valueOf(activeReservations));
-            // monthlyRevenueLabel.setText(String.format("%.2f €", monthlyRevenue));
+            activeReservationsLabel.setText(String.valueOf(activeReservations));
+            monthlyRevenueLabel.setText(String.format("%.2f €", monthlyRevenue));
 
             statusLabel.setText("Statistiques mises à jour");
         } catch (Exception e) {
